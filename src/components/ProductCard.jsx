@@ -87,16 +87,17 @@ function ProductCard({ product }) {
       onClick={() => navigate(`/product/${product.originalProductId}?color=${product.color}`)}
       className="relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105 cursor-pointer border border-gray-200 dark:border-gray-700 group"
     >
-      {product.salePrice && product.salePercentage > 0 && (
-        <>
-          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-md">
-            -{product.salePercentage}%
-          </span>
-          <span className="absolute top-2 right-2 bg-gradient-to-r from-red-600 to-red-400 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-md">
-            {isRTL ? "تخفيض" : "SALE"}
-          </span>
-        </>
-      )}
+      {product.salePrice > 0 && product.salePercentage > 0 ? (
+  <>
+    <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-md">
+      -{product.salePercentage}%
+    </span>
+    <span className="absolute top-2 right-2 bg-gradient-to-r from-red-600 to-red-400 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow-md">
+      {isRTL ? "تخفيض" : "SALE"}
+    </span>
+  </>
+) : null}
+
 
       {/* Product Image */}
       <div className="w-full h-56 sm:h-64 lg:h-72 overflow-hidden bg-gray-100 dark:bg-gray-900">
