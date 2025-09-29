@@ -1,0 +1,12 @@
+# Allow all search engines to crawl the public site
+User-agent: *
+Allow: /
+
+# Disallow sensitive paths (admin, api)
+Disallow: /admin
+Disallow: /api
+Disallow: /auth
+Disallow: /checkout
+
+# Sitemap location
+Sitemap: https://sentostore.com/sitemap.xml
