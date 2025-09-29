@@ -11,6 +11,7 @@ export default defineConfig({
   
   
   build: {
+    minify: 'esbuild', // أو 'terser'
     rollupOptions: {
       output: {
         manualChunks(id) {
