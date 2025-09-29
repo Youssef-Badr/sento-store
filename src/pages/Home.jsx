@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { lazy, Suspense } from "react";
 
-const Hero = lazy(() => import("../components/HEro"));import ProductCard from "../components/ProductCard";
+const Hero = lazy(() => import("../components/Hero"));
+import ProductCard from "../components/ProductCard";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
 import api from "../../src/api/axiosInstance";
@@ -90,9 +91,15 @@ export default function Home() {
         </div>
 
         {/* Hero Slider */}
-        <Suspense fallback={<div className="h-64 flex justify-center items-center">Loading Hero...</div>}>
-        <Hero latestRef={latestRef} language={language} />
-      </Suspense>
+        <Suspense
+          fallback={
+            <div className="h-64 flex justify-center items-center">
+              Loading Hero...
+            </div>
+          }
+        >
+          <Hero latestRef={latestRef} language={language} />
+        </Suspense>
         {/* Featured Products */}
         <div className="py-8">
           <h2 className="text-3xl font-bold mb-6 text-center text-indigo-500 dark:text-indigo-400">
