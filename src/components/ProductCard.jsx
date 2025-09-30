@@ -114,7 +114,7 @@ function ProductCard({ product }) {
       {/* Product Info */}
       <div className="p-5 flex flex-col justify-between pb-16 sm:pb-20">
         <h3 className={`font-semibold text-lg sm:text-xl mb-2 text-gray-800 dark:text-gray-100 truncate ${isRTL ? "text-right" : "text-left"}`}>
-          {`${product.name})`}
+          {`${product.name}`}
         </h3>
 
         {/* Stars + Rating */}
