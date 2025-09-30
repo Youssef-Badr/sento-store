@@ -27,7 +27,7 @@ export default function BannerSlider() {
       },
       {
         id: 3,
-        title: language === "ar" ? "🏃‍♀️ ملابس الرياضة" : "🏃‍♂️ Sportwear",
+        title: language === "ar" ? "🏃‍♂️ مجموعة الرياضة" : "🏃‍♂️ Sport Collection",
         subtitle:
           language === "ar"
             ? "أحدث المنتجات للرياضيين"
