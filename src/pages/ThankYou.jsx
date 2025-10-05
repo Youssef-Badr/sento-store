@@ -33,7 +33,7 @@ const ThankYou = () => {
     0
   )|| 0;
   const shipping = Number(order?.shippingFee) || 0;
-  const discount = order.discount?.amount || 0;
+  const discount = order?.discount?.amount || 0;
   const calculatedTotal = subtotal + shipping - discount;
 
  // ------------------- Tracking بعد تحميل البيانات -------------------
