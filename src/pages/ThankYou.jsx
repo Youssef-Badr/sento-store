@@ -27,11 +27,11 @@ const ThankYou = () => {
   }, [orderId]);
 
   // 🧮 الحسابات
-  const subtotal = order.orderItems.reduce(
+  const subtotal = order?.orderItems?.reduce(
     (acc, item) =>
       acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
     0
-  );
+  )|| 0;
   const shipping = Number(order.shippingFee) || 0;
   const discount = order.discount?.amount || 0;
   const calculatedTotal = subtotal + shipping - discount;
