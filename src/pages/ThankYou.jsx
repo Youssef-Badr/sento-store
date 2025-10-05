@@ -41,11 +41,13 @@ const ThankYou = () => {
   if (!order || !order.orderItems) return;
 
   // ------------- Google Analytics (gtag) -------------
+  const metaCurrency = ["EGP","USD"].includes("EGP") ? "EGP" : "USD";
+
   if (window.gtag) {
     window.gtag("event", "purchase", {
       transaction_id: order._id || "unknown",
       value: Number(calculatedTotal) || 0,
-      currency: "EGP",
+      currency: metaCurrency,
       items: order.orderItems.map((item) => ({
         id: item.product || item._id || "unknown",
         quantity: Number(item.quantity) || 1,
@@ -58,7 +60,7 @@ const ThankYou = () => {
   if (window.fbq) {
     window.fbq("track", "Purchase", {
       value: Number(calculatedTotal) || 0,
-      currency: "EGP",
+      currency: metaCurrency,
       contents: order.orderItems.map((item) => ({
         id: item.product || item._id || "unknown",
         quantity: Number(item.quantity) || 1,
