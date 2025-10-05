@@ -306,6 +306,39 @@ const CheckoutPage = () => {
       }
   
       payload.append("orderItems", JSON.stringify(orderItems));
+
+
+
+
+
+// 👈 قبل إرسال الأوردر
+if (window.fbq) {
+  window.fbq('track', 'InitiateCheckout', {
+    value: totalWithDiscount,
+    currency: 'EGP',
+    contents: cart.map(item => ({
+      id: item.product,
+      quantity: item.qty,
+      item_price: item.price
+    })),
+    content_type: 'product'
+  });
+}
+
+if (window.gtag) { // بيتأكد إن مكتبة Google Analytics موجودة
+  window.gtag('event', 'begin_checkout', { // بيبعت حدث باسم "begin_checkout"
+    value: totalWithDiscount,        // إجمالي قيمة العربه بعد الخصم
+    currency: 'EGP',                 // العملة
+    items: cart.map(item => ({       // تفاصيل كل منتج بالعربة
+      id: item.product,              // رقم المنتج
+      quantity: item.qty,            // الكمية
+      price: item.price              // سعر الوحدة
+    }))
+  });
+}
+
+
+
   
       // ✅ طلب إنشاء الأوردر
       const res = await api.post("/orders", payload, {

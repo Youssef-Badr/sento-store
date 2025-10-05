@@ -26,6 +26,52 @@ const ThankYou = () => {
     if (orderId) fetchOrder();
   }, [orderId]);
 
+  // 🧮 الحسابات
+  const subtotal = order.orderItems.reduce(
+    (acc, item) =>
+      acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
+    0
+  );
+  const shipping = Number(order.shippingFee) || 0;
+  const discount = order.discount?.amount || 0;
+  const calculatedTotal = subtotal + shipping - discount;
+
+ // ------------------- Tracking بعد تحميل البيانات -------------------
+ useEffect(() => {
+  if (!order) return;
+
+  // ------------- Google Analytics (gtag) -------------
+  if (window.gtag) {
+    window.gtag("event", "purchase", {
+      transaction_id: order._id,
+      value: calculatedTotal,
+      currency: "EGP",
+      items: order.orderItems.map((item) => ({
+        id: item.product,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+    });
+  }
+
+  // ------------- Facebook / Instagram Pixel -------------
+  if (window.fbq) {
+    window.fbq("track", "Purchase", {
+      value: calculatedTotal,
+      currency: "EGP",
+        contents: order.orderItems.map((item) => ({
+          id: item.product,
+          quantity: item.quantity,
+          item_price: item.price,
+        })),
+        content_type: "product",
+      });
+    }
+  }, [order, calculatedTotal]);
+
+
+
+
   if (loading) {
     return (
       <div
@@ -56,15 +102,6 @@ const ThankYou = () => {
     );
   }
 
-  // 🧮 الحسابات
-  const subtotal = order.orderItems.reduce(
-    (acc, item) =>
-      acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
-    0
-  );
-  const shipping = Number(order.shippingFee) || 0;
-  const discount = order.discount?.amount || 0;
-  const calculatedTotal = subtotal + shipping - discount;
 
   return (
     <div
@@ -182,8 +219,8 @@ const ThankYou = () => {
           {calculatedTotal !== order.totalPrice && (
             <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
               {language === "ar"
-                ? `الإجمالي من السيرفر: ${order.totalPrice} EGP`
-                : `Total from server: ${order.totalPrice} EGP`}
+                ? `الإجمالي : ${order.totalPrice} EGP`
+                : `Total : ${order.totalPrice} EGP`}
             </p>
           )}
         </div>
