@@ -42,6 +42,19 @@ export default function ProductDetails() {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
 
+  // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
+useEffect(() => {
+  if (product && window.fbq) {
+    window.fbq('track', 'ViewContent', {
+      content_ids: [product._id],
+      content_name: product.name,
+      content_type: 'product',
+      value: product.salePrice || product.originalPrice || 0,
+      currency: 'EGP',
+    });
+  }
+}, [product]);
+
   const { language } = useLanguage();
   useTheme();
   const isRTL = language === "ar";
@@ -326,6 +339,9 @@ export default function ProductDetails() {
       }))
     ) || [];
 
+
+
+
   const handleAddToCart = () => {
     if (!product?._id) {
       showToastMessage("❌ Product data is missing!");
@@ -360,6 +376,19 @@ export default function ProductDetails() {
 
     addToCart(product, selectedColorId, selectedSizeId, selectedQty);
 
+// ✅ Meta Pixel AddToCart using window
+if (window.fbq) {
+  window.fbq('track', 'AddToCart', {
+    content_ids: [product._id],
+    content_name: product.name,
+    content_type: 'product',
+    value: product.salePrice || product.originalPrice || 0,
+    currency: 'EGP',
+    quantity: selectedQty,
+  });
+}
+
+    
     showToastMessage(
       translations.addToCartSuccess +
         `${product.name} - ${selectedVariation.color} - ${selectedSize.size} x${selectedQty}`

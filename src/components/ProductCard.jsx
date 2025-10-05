@@ -63,6 +63,19 @@ function ProductCard({ product }) {
         addToCart({ ...product, _id: productId }, variationId, size._id, 1);
         setShowSizeSelector(false);
 
+        
+// Meta Pixel AddToCart event
+if (window.fbq) {
+  window.fbq('track', 'AddToCart', {
+    content_ids: [product._id],
+    content_name: product.name,
+    content_type: 'product',
+    value: product.salePrice || product.price,
+    currency: 'EGP',
+  });
+}
+
+
         toast.success(isRTL ? "✅ تم إضافة المنتج إلى السلة" : "✅ Product added to cart");
       } else {
         toast.error(isRTL ? "نفد هذا المقاس!" : "This size is out of stock!");
@@ -70,6 +83,9 @@ function ProductCard({ product }) {
     },
     [addToCart, isRTL, product]
   );
+
+
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
