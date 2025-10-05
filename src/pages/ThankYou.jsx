@@ -38,18 +38,18 @@ const ThankYou = () => {
 
  // ------------------- Tracking بعد تحميل البيانات -------------------
  useEffect(() => {
-  if (!order) return;
+  if (!order || !order.orderItems) return;
 
   // ------------- Google Analytics (gtag) -------------
   if (window.gtag) {
     window.gtag("event", "purchase", {
-      transaction_id: order._id,
-      value: calculatedTotal,
+      transaction_id: order._id || "unknown",
+      value: Number(calculatedTotal) || 0,
       currency: "EGP",
       items: order.orderItems.map((item) => ({
-        id: item.product,
-        quantity: item.quantity,
-        price: item.price,
+        id: item.product || item._id || "unknown",
+        quantity: Number(item.quantity) || 1,
+        price: Number(item.price) || 0,
       })),
     });
   }
@@ -57,17 +57,18 @@ const ThankYou = () => {
   // ------------- Facebook / Instagram Pixel -------------
   if (window.fbq) {
     window.fbq("track", "Purchase", {
-      value: calculatedTotal,
+      value: Number(calculatedTotal) || 0,
       currency: "EGP",
-        contents: order.orderItems.map((item) => ({
-          id: item.product,
-          quantity: item.quantity,
-          item_price: item.price,
-        })),
-        content_type: "product",
-      });
-    }
-  }, [order, calculatedTotal]);
+      contents: order.orderItems.map((item) => ({
+        id: item.product || item._id || "unknown",
+        quantity: Number(item.quantity) || 1,
+        item_price: Number(item.price) || 0,
+      })),
+      content_type: "product",
+    });
+  }
+}, [order, calculatedTotal]);
+
 
 
 
