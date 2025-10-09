@@ -1,6 +1,6 @@
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
-import { FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { FiShoppingBag, FiGift, FiStar } from "react-icons/fi"; // أيقونات للروابط السريعة
 import { useEffect, useState } from "react";
 
@@ -120,6 +120,7 @@ export default function Footer() {
             {t.contactText}
           </p>
           <div className={`flex gap-5 ${isRTL ? "justify-end" : ""}`}>
+            {/* Facebook */}
             <a
               href={socialLinks.facebook}
               target="_blank"
@@ -129,6 +130,8 @@ export default function Footer() {
             >
               <FaFacebookF size={24} />
             </a>
+
+            {/* Instagram */}
             <a
               href={socialLinks.instagram}
               target="_blank"
@@ -138,6 +141,8 @@ export default function Footer() {
             >
               <FaInstagram size={24} />
             </a>
+
+            {/* TikTok */}
             <a
               href={socialLinks.tiktok}
               target="_blank"
@@ -147,6 +152,34 @@ export default function Footer() {
             >
               <FaTiktok size={24} />
             </a>
+
+            {/* WhatsApp Dropdown */}
+            <div className="relative group">
+              <button
+                aria-label="WhatsApp"
+                className="p-2 rounded-full bg-green-500 text-white shadow hover:bg-green-600 transform hover:scale-110 hover:animate-pulse transition-all duration-300"
+              >
+                <FaWhatsapp size={24} />
+              </button>
+              <div className="absolute bottom-12 left-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col gap-2 min-w-[160px]">
+                <a
+                  href="https://wa.me/201157035111"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
+                >
+                  WhatsApp No.1
+                </a>
+                <a
+                  href="https://wa.me/201515162937"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
+                >
+                  WhatsApp No.2
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
