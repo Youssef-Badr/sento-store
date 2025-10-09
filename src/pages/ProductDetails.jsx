@@ -43,17 +43,17 @@ export default function ProductDetails() {
   const [hasReviewed, setHasReviewed] = useState(false);
 
   // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
-useEffect(() => {
-  if (product && window.fbq) {
-    window.fbq('track', 'ViewContent', {
-      content_ids: [product._id],
-      content_name: product.name,
-      content_type: 'product',
-      value: product.salePrice || product.originalPrice || 0,
-      currency: 'EGP',
-    });
-  }
-}, [product]);
+  useEffect(() => {
+    if (product && window.fbq) {
+      window.fbq("track", "ViewContent", {
+        content_ids: [product._id],
+        content_name: product.name,
+        content_type: "product",
+        value: product.salePrice || product.originalPrice || 0,
+        currency: "EGP",
+      });
+    }
+  }, [product]);
 
   const { language } = useLanguage();
   useTheme();
@@ -202,16 +202,23 @@ useEffect(() => {
           );
           setHasReviewed(reviewed);
         }
+        const normalize = (value) => {
+          if (!value) return "";
+          // إزالة رمز الهاش (#) بشكل قاطع من أي مكان والتحويل لحروف صغيرة وإزالة الفراغات
+          return value.replace(/#/g, "").toLowerCase().trim();
+        };
 
-        // ... (منطق التباينات والألوان والمقاسات) ...
         const params = new URLSearchParams(search);
         const colorFromUrl = params.get("color");
 
         let initialVariation = null;
+        const normalizedColorFromUrl = normalize(colorFromUrl);
 
-        if (colorFromUrl) {
+        if (normalizedColorFromUrl) {
+          // 🆕 الخطوة 3: البحث باستخدام الدالة الموحدة
+          // الآن، سيتم البحث سواء كانت القيمة نصاً ("red") أو كود هيكسا ("#ff0000")
           initialVariation = prod.variations.find(
-            (v) => v.color.toLowerCase() === colorFromUrl.toLowerCase()
+            (v) => normalize(v.color) === normalizedColorFromUrl
           );
         }
 
@@ -225,6 +232,7 @@ useEffect(() => {
         setSelectedImage(
           initialVariation?.images?.[0]?.url || prod?.images?.[0]?.url || ""
         );
+
         setSelectedSizeId(null);
         setSelectedQty(1);
 
@@ -339,9 +347,6 @@ useEffect(() => {
       }))
     ) || [];
 
-
-
-
   const handleAddToCart = () => {
     if (!product?._id) {
       showToastMessage("❌ Product data is missing!");
@@ -376,19 +381,18 @@ useEffect(() => {
 
     addToCart(product, selectedColorId, selectedSizeId, selectedQty);
 
-// ✅ Meta Pixel AddToCart using window
-if (window.fbq) {
-  window.fbq('track', 'AddToCart', {
-    content_ids: [product._id],
-    content_name: product.name,
-    content_type: 'product',
-    value: product.salePrice || product.originalPrice || 0,
-    currency: 'EGP',
-    quantity: selectedQty,
-  });
-}
+    // ✅ Meta Pixel AddToCart using window
+    if (window.fbq) {
+      window.fbq("track", "AddToCart", {
+        content_ids: [product._id],
+        content_name: product.name,
+        content_type: "product",
+        value: product.salePrice || product.originalPrice || 0,
+        currency: "EGP",
+        quantity: selectedQty,
+      });
+    }
 
-    
     showToastMessage(
       translations.addToCartSuccess +
         `${product.name} - ${selectedVariation.color} - ${selectedSize.size} x${selectedQty}`
@@ -481,7 +485,7 @@ if (window.fbq) {
     >
       <div className="container mt-10 mx-auto px-4 relative">
         <button
-        aria-labelledby="back-button"
+          aria-labelledby="back-button"
           onClick={() => navigate(-1)}
           className="absolute top-4 left-4 md:left-8 p-3 rounded-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors z-20 shadow-md"
           aria-label="Go back"
@@ -511,7 +515,7 @@ if (window.fbq) {
             >
               {allImages.map((img) => (
                 <button
-                aria-label="Select product image"
+                  aria-label="Select product image"
                   key={img._id || img.url}
                   onClick={() => handleThumbnailClick(img)}
                   className={`flex-shrink-0 rounded-xl border-2 transition-all p-1 ${
@@ -582,7 +586,7 @@ if (window.fbq) {
                   >
                     {product.variations?.map((v) => (
                       <button
-                      aria-label="Select color"
+                        aria-label="Select color"
                         key={v._id}
                         onClick={() => {
                           setSelectedColorId(v._id);
@@ -605,7 +609,7 @@ if (window.fbq) {
               {/* for size chart modal */}
               {product.sizeChart && (
                 <button
-                aria-label="Show size chart"
+                  aria-label="Show size chart"
                   onClick={() => setShowSizeChart(true)}
                   className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
                 >
@@ -626,7 +630,7 @@ if (window.fbq) {
                   >
                     {/* زر الإغلاق */}
                     <button
-                    aria-labelledby="Close size chart"
+                      aria-labelledby="Close size chart"
                       onClick={() => setShowSizeChart(false)}
                       className="absolute top-4 right-4 text-white text-3xl font-bold hover:text-red-500 z-50"
                       aria-label="Close"
@@ -660,7 +664,7 @@ if (window.fbq) {
                       return (
                         <div key={s._id} className="relative">
                           <button
-                          aria-label="Select size"
+                            aria-label="Select size"
                             type="button"
                             onClick={() =>
                               !isOutOfStock && setSelectedSizeId(s._id)
@@ -701,7 +705,7 @@ if (window.fbq) {
                   </h3>
                   <div className="flex items-center gap-2">
                     <button
-                    aria-label="Decrease quantity"
+                      aria-label="Decrease quantity"
                       onClick={() =>
                         setSelectedQty((prev) => Math.max(1, prev - 1))
                       }
@@ -722,7 +726,7 @@ if (window.fbq) {
                       className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-700 px-3 py-2 rounded-lg w-24 text-center focus:border-violet-500 outline-none"
                     />
                     <button
-                    aria-label="Increase quantity"
+                      aria-label="Increase quantity"
                       onClick={() => setSelectedQty((prev) => prev + 1)}
                       className="p-2 rounded-full bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors"
                     >
@@ -734,7 +738,7 @@ if (window.fbq) {
             </div>
 
             <button
-            aria-label="Add to Cart"
+              aria-label="Add to Cart"
               onClick={handleAddToCart}
               className="mt-6 flex items-center justify-center gap-2 bg-purple-600 text-white py-3 px-6 rounded-xl shadow-lg hover:bg-purple-700 dark:hover:bg-purple-500 transition-all w-full sm:w-auto font-bold text-lg"
             >
@@ -820,7 +824,7 @@ if (window.fbq) {
               </div>
 
               <button
-              aria-label="Submit Review"
+                aria-label="Submit Review"
                 type="submit"
                 disabled={isSubmittingReview}
                 className="w-full bg-purple-600 text-white py-3 rounded-xl shadow-md hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
