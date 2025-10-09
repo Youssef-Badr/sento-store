@@ -408,6 +408,11 @@ export default function ProductDetails() {
     }
   };
 
+  const isSoldOut =
+  selectedVariation?.sizes?.length > 0 &&
+  selectedVariation.sizes.every((s) => s.quantity === 0);
+
+
   // ⭐️ مكون عرض التقييم (لمساعدتك)
   const RatingStars = ({ value }) => {
     // التقريب لأقرب نصف نجمة للعرض
@@ -737,13 +742,23 @@ export default function ProductDetails() {
               )}
             </div>
 
-            <button
-              aria-label="Add to Cart"
-              onClick={handleAddToCart}
-              className="mt-6 flex items-center justify-center gap-2 bg-purple-600 text-white py-3 px-6 rounded-xl shadow-lg hover:bg-purple-700 dark:hover:bg-purple-500 transition-all w-full sm:w-auto font-bold text-lg"
-            >
-              <ShoppingCart size={20} /> {translations.addToCart}
-            </button>
+            {isSoldOut ? (
+  <button
+    disabled
+    className="mt-6 flex items-center justify-center gap-2 bg-gray-400 text-white py-3 px-6 rounded-xl shadow-lg cursor-not-allowed w-full sm:w-auto font-bold text-lg"
+  >
+    {isRTL ? "غير متاح" : "Sold Out"}
+  </button>
+) : (
+  <button
+    aria-label="Add to Cart"
+    onClick={handleAddToCart}
+    className="mt-6 flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white py-3 px-6 rounded-xl shadow-lg w-full sm:w-auto font-bold text-lg transition-all"
+  >
+    <ShoppingCart size={20} />
+    {translations.addToCart}
+  </button>
+)}
           </div>
         </div>
 

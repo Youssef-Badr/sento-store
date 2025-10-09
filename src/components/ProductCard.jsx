@@ -18,6 +18,9 @@ function ProductCard({ product }) {
 
   const availableSizes = product.sizes || [];
 
+// ✅ تشيك لو كل المقاسات خلصت
+const isSoldOut =
+  availableSizes.length > 0 && availableSizes.every((size) => size.quantity <= 0);
   const imageUrl =
     product.images?.[0]?.url ||
     "https://via.placeholder.com/400x400?text=No+Image";
@@ -223,7 +226,7 @@ function ProductCard({ product }) {
         </div>
       </div>
 
-      {/* Add to Cart Button */}
+      {/* Add to Cart Button
       <button
         aria-labelledby=""
         type="button"
@@ -246,7 +249,46 @@ sm:w-auto sm:px-5 sm:py-2.5 sm:text-base sm:opacity-0 sm:translate-y-6
 sm:group-hover:opacity-100 sm:group-hover:translate-y-0`}
       >
         {isRTL ? "أضف إلى السلة" : "Add to Cart"}
-      </button>
+      </button> */}
+{/* Add to Cart / Sold Out */}
+{isSoldOut ? (
+  <div
+    className="absolute bottom-4 left-1/2 -translate-x-1/2
+      bg-gray-400 dark:bg-gray-600
+      text-white font-semibold rounded-full shadow-lg
+      transition-all duration-300 ease-in-out
+      w-[85%] px-3 py-2 text-sm cursor-not-allowed text-center
+      sm:w-auto sm:px-5 sm:py-2.5 sm:text-base"
+  >
+    {isRTL ? "غير متاح" : "Sold Out"}
+  </div>
+) : (
+  <button
+    aria-labelledby=""
+    type="button"
+    onClick={(e) => {
+      e.stopPropagation();
+      if (availableSizes.length > 0) setShowSizeSelector(true);
+      else
+        toast.error(
+          language === "ar"
+            ? "⚠️ هذا المنتج غير متاح حاليًا"
+            : "⚠️ This product is currently unavailable"
+        );
+    }}
+    className={`absolute bottom-4 left-1/2 -translate-x-1/2
+      bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700
+      text-white font-semibold rounded-full shadow-lg hover:shadow-xl
+      transition-all duration-300 ease-in-out
+      w-[85%] px-3 py-2 text-sm opacity-100 translate-y-0
+      sm:w-auto sm:px-5 sm:py-2.5 sm:text-base sm:opacity-0 sm:translate-y-6
+      sm:group-hover:opacity-100 sm:group-hover:translate-y-0`}
+  >
+    {isRTL ? "أضف إلى السلة" : "Add to Cart"}
+  </button>
+)}
+
+
 
       {/* Size Selector Modal */}
       {showSizeSelector && (
