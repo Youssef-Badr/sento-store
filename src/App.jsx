@@ -43,7 +43,6 @@ function App() {
           }
         >
           <Routes>
-          <ScrollToTop />
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/offers" element={<Offers />} />
