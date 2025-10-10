@@ -1,7 +1,7 @@
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
-import { FiShoppingBag, FiGift, FiStar } from "react-icons/fi"; // أيقونات للروابط السريعة
+import { FiShoppingBag, FiGift, FiStar } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 export default function Footer() {
@@ -11,6 +11,7 @@ export default function Footer() {
 
   const [visible, setVisible] = useState(false);
 
+  // scroll animation for footer
   useEffect(() => {
     const handleScroll = () => {
       const scrollPos = window.scrollY + window.innerHeight;
@@ -20,6 +21,53 @@ export default function Footer() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // === Draggable WhatsApp ===
+  const [position, setPosition] = useState({
+    x: isRTL ? 20 : 20, // يمين او شمال
+    y: window.innerHeight - 100, // تحت
+  });
+  const [dragging, setDragging] = useState(false);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const handleMouseDown = (e) => {
+    setDragging(true);
+    setOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragging) return;
+    setPosition({
+      x: e.clientX - offset.x,
+      y: e.clientY - offset.y,
+    });
+  };
+
+  const handleMouseUp = () => setDragging(false);
+
+  // mobile touch support
+  const handleTouchStart = (e) => {
+    setDragging(true);
+    const touch = e.touches[0];
+    setOffset({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!dragging) return;
+    const touch = e.touches[0];
+    setPosition({
+      x: touch.clientX - offset.x,
+      y: touch.clientY - offset.y,
+    });
+  };
+
+  const handleTouchEnd = () => setDragging(false);
 
   const socialLinks = {
     facebook: "https://www.facebook.com/share/16XPrNjwBV/?mibextid=wwXIfr",
@@ -69,127 +117,151 @@ export default function Footer() {
   ];
 
   return (
-    <footer
-      dir={isRTL ? "rtl" : "ltr"}
-      className={`${bgGradient} ${textColor} w-full transition-colors duration-500 ease-in-out transform ${
-        visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-      }`}
-    >
-      <div className="container mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* About Section */}
-        <div className="flex flex-col">
-          <h3 className="text-2xl font-bold mb-3">{t.about}</h3>
-          <p
-            className={`text-sm md:text-base ${
-              isRTL ? "text-right" : ""
-            } opacity-90 transition-colors duration-500`}
-          >
-            {t.description}
-          </p>
-        </div>
-
-        {/* Quick Links with Icons */}
-        <div className="flex flex-col">
-          <h3 className="text-2xl font-bold mb-3">{t.links}</h3>
-          <ul className={`flex flex-col gap-3 ${isRTL ? "text-right" : ""}`}>
-            {quickLinks.map((link) => (
-              <li key={link.name}>
-                <a
-                  href={link.href}
-                  aria-label={link.name}
-                  className={`flex items-center gap-2 transition-colors duration-300 ${linkHover} hover:animate-pulse`}
-                >
-                  <span className="text-purple-600 dark:text-purple-400">
-                    {link.icon}
-                  </span>
-                  {link.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Contact / Social Links */}
-        <div className="flex flex-col">
-          <h3 className="text-2xl font-bold mb-3">{t.contact}</h3>
-          <p
-            className={`text-sm md:text-base mb-4 ${
-              isRTL ? "text-right" : ""
-            } opacity-90 transition-colors duration-500`}
-          >
-            {t.contactText}
-          </p>
-          <div className={`flex gap-5 ${isRTL ? "justify-end" : ""}`}>
-            {/* Facebook */}
-            <a
-              href={socialLinks.facebook}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Facebook"
-              className="p-2 rounded-full bg-blue-600 text-white shadow hover:bg-blue-700 transform hover:scale-110 hover:animate-pulse transition-all duration-300"
+    <>
+      <footer
+        dir={isRTL ? "rtl" : "ltr"}
+        className={`${bgGradient} ${textColor} w-full transition-colors duration-500 ease-in-out transform ${
+          visible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+        }`}
+      >
+        <div className="container mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* About Section */}
+          <div className="flex flex-col">
+            <h3 className="text-2xl font-bold mb-3">{t.about}</h3>
+            <p
+              className={`text-sm md:text-base ${
+                isRTL ? "text-right" : ""
+              } opacity-90 transition-colors duration-500`}
             >
-              <FaFacebookF size={24} />
-            </a>
+              {t.description}
+            </p>
+          </div>
 
-            {/* Instagram */}
-            <a
-              href={socialLinks.instagram}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="p-2 rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-400 text-white shadow hover:scale-110 hover:animate-pulse transform transition-all duration-300"
+          {/* Quick Links with Icons */}
+          <div className="flex flex-col">
+            <h3 className="text-2xl font-bold mb-3">{t.links}</h3>
+            <ul className={`flex flex-col gap-3 ${isRTL ? "text-right" : ""}`}>
+              {quickLinks.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    aria-label={link.name}
+                    className={`flex items-center gap-2 transition-colors duration-300 ${linkHover} hover:animate-pulse`}
+                  >
+                    <span className="text-purple-600 dark:text-purple-400">
+                      {link.icon}
+                    </span>
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact / Social Links */}
+          <div className="flex flex-col">
+            <h3 className="text-2xl font-bold mb-3">{t.contact}</h3>
+            <p
+              className={`text-sm md:text-base mb-4 ${
+                isRTL ? "text-right" : ""
+              } opacity-90 transition-colors duration-500`}
             >
-              <FaInstagram size={24} />
-            </a>
-
-            {/* TikTok */}
-            <a
-              href={socialLinks.tiktok}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="TikTok"
-              className="p-2 rounded-full bg-black text-white shadow hover:scale-110 hover:animate-pulse transform transition-all duration-300"
-            >
-              <FaTiktok size={24} />
-            </a>
-
-            {/* WhatsApp Dropdown */}
-            <div className="relative group">
-              <button
-                aria-label="WhatsApp"
-                className="p-2 rounded-full bg-green-500 text-white shadow hover:bg-green-600 transform hover:scale-110 hover:animate-pulse transition-all duration-300"
+              {t.contactText}
+            </p>
+            <div className={`flex gap-5 ${isRTL ? "justify-end" : ""}`}>
+              {/* Facebook */}
+              <a
+                href={socialLinks.facebook}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Facebook"
+                className="p-2 rounded-full bg-blue-600 text-white shadow hover:bg-blue-700 transform hover:scale-110 hover:animate-pulse transition-all duration-300"
               >
-                <FaWhatsapp size={24} />
-              </button>
-              <div className="absolute bottom-12 left-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col gap-2 min-w-[160px]">
-                <a
-                  href="https://wa.me/201157035111"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
-                >
-                  WhatsApp No.1
-                </a>
-                <a
-                  href="https://wa.me/201515162937"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
-                >
-                  WhatsApp No.2
-                </a>
-              </div>
+                <FaFacebookF size={24} />
+              </a>
+
+              {/* Instagram */}
+              <a
+                href={socialLinks.instagram}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
+                className="p-2 rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-400 text-white shadow hover:scale-110 hover:animate-pulse transform transition-all duration-300"
+              >
+                <FaInstagram size={24} />
+              </a>
+
+              {/* TikTok */}
+              <a
+                href={socialLinks.tiktok}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="TikTok"
+                className="p-2 rounded-full bg-black text-white shadow hover:scale-110 hover:animate-pulse transform transition-all duration-300"
+              >
+                <FaTiktok size={24} />
+              </a>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Footer Bottom */}
+        {/* Footer Bottom */}
+        <div
+          className={`mt-10 border-t ${borderColor} pt-4 text-center text-sm opacity-90 transition-colors duration-500`}
+        >
+          {t.rights}
+        </div>
+      </footer>
+
+      {/* Floating WhatsApp - Draggable by mouse/touch */}
       <div
-        className={`mt-10 border-t ${borderColor} pt-4 text-center text-sm opacity-90 transition-colors duration-500`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          position: "fixed",
+          left: isRTL ? "auto" : `${position.x}px`,
+          right: isRTL ? `${position.x}px` : "auto",
+          top: `${position.y}px`,
+          cursor: "grab",
+          zIndex: 9999,
+        }}
+        className="group"
       >
-        {t.rights}
+        <button
+          aria-label="WhatsApp"
+          className="p-4 rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600 transform hover:scale-110 hover:animate-pulse transition-all duration-300"
+        >
+          <FaWhatsapp size={28} />
+        </button>
+
+        {/* Dropdown */}
+        <div
+          className={`absolute bottom-16 ${
+            isRTL ? "left-0" : "right-0"
+          } bg-white dark:bg-gray-800 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col gap-2 min-w-[180px] border border-gray-200 dark:border-gray-700`}
+        >
+          <a
+            href="https://wa.me/201157035111"
+            target="_blank"
+            rel="noreferrer"
+            className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
+          >
+            WhatsApp No.1
+          </a>
+          <a
+            href="https://wa.me/201515162937"
+            target="_blank"
+            rel="noreferrer"
+            className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
+          >
+            WhatsApp No.2
+          </a>
+        </div>
       </div>
-    </footer>
+    </>
   );
 }
