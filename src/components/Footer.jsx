@@ -2,9 +2,7 @@ import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { FiShoppingBag, FiGift, FiStar } from "react-icons/fi";
-import { useEffect, useState } from "react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -13,6 +11,50 @@ export default function Footer() {
 
   const [visible, setVisible] = useState(false);
   const [showWhatsApp, setShowWhatsApp] = useState(false);
+
+  // === Draggable WhatsApp ===
+  const [position, setPosition] = useState({
+    x: isRTL ? 20 : window.innerWidth - 80,
+    y: window.innerHeight - 100,
+  });
+  const buttonRef = useRef(null);
+  const dragging = useRef(false);
+  const offset = useRef({ x: 0, y: 0 });
+
+  const handleDown = (e) => {
+    dragging.current = true;
+    const rect = buttonRef.current.getBoundingClientRect();
+    offset.current = {
+      x: (e.clientX || e.touches[0].clientX) - rect.left,
+      y: (e.clientY || e.touches[0].clientY) - rect.top,
+    };
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleUp);
+    document.addEventListener("touchmove", handleMove);
+    document.addEventListener("touchend", handleUp);
+  };
+
+  const handleMove = (e) => {
+    if (!dragging.current) return;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+    // boundaries
+    const maxX = window.innerWidth - 70;
+    const maxY = window.innerHeight - 70;
+    const newX = Math.min(Math.max(0, clientX - offset.current.x), maxX);
+    const newY = Math.min(Math.max(0, clientY - offset.current.y), maxY);
+
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleUp = () => {
+    dragging.current = false;
+    document.removeEventListener("mousemove", handleMove);
+    document.removeEventListener("mouseup", handleUp);
+    document.removeEventListener("touchmove", handleMove);
+    document.removeEventListener("touchend", handleUp);
+  };
 
   // scroll animation for footer
   useEffect(() => {
@@ -169,20 +211,16 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Floating WhatsApp - Framer Motion */}
-      <motion.div
-        drag
-        dragConstraints={{
-          top: 0,
-          left: 0,
-          right: window.innerWidth - 80,
-          bottom: window.innerHeight - 80,
-        }}
-        dragElastic={0.2}
+      {/* Floating WhatsApp (Draggable without Framer Motion) */}
+      <div
+        ref={buttonRef}
+        onMouseDown={handleDown}
+        onTouchStart={handleDown}
         style={{
           position: "fixed",
-          bottom: "20px",
-          [isRTL ? "left" : "right"]: "20px",
+          left: position.x,
+          top: position.y,
+          cursor: "grab",
           zIndex: 9999,
         }}
       >
@@ -220,7 +258,7 @@ export default function Footer() {
             </div>
           )}
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }
