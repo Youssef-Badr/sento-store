@@ -3,6 +3,8 @@ import { useTheme } from "../contexts/ThemeContext";
 import { FaFacebookF, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { FiShoppingBag, FiGift, FiStar } from "react-icons/fi";
 import { useEffect, useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 export default function Footer() {
   const { language } = useLanguage();
@@ -10,6 +12,7 @@ export default function Footer() {
   const isRTL = language === "ar";
 
   const [visible, setVisible] = useState(false);
+  const [showWhatsApp, setShowWhatsApp] = useState(false);
 
   // scroll animation for footer
   useEffect(() => {
@@ -21,53 +24,6 @@ export default function Footer() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // === Draggable WhatsApp ===
-  const [position, setPosition] = useState({
-    x: isRTL ? 20 : 20, // يمين او شمال
-    y: window.innerHeight - 100, // تحت
-  });
-  const [dragging, setDragging] = useState(false);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-  const handleMouseDown = (e) => {
-    setDragging(true);
-    setOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
-  };
-
-  const handleMouseMove = (e) => {
-    if (!dragging) return;
-    setPosition({
-      x: e.clientX - offset.x,
-      y: e.clientY - offset.y,
-    });
-  };
-
-  const handleMouseUp = () => setDragging(false);
-
-  // mobile touch support
-  const handleTouchStart = (e) => {
-    setDragging(true);
-    const touch = e.touches[0];
-    setOffset({
-      x: touch.clientX - position.x,
-      y: touch.clientY - position.y,
-    });
-  };
-
-  const handleTouchMove = (e) => {
-    if (!dragging) return;
-    const touch = e.touches[0];
-    setPosition({
-      x: touch.clientX - offset.x,
-      y: touch.clientY - offset.y,
-    });
-  };
-
-  const handleTouchEnd = () => setDragging(false);
 
   const socialLinks = {
     facebook: "https://www.facebook.com/share/16XPrNjwBV/?mibextid=wwXIfr",
@@ -213,55 +169,58 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Floating WhatsApp - Draggable by mouse/touch */}
-      <div
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+      {/* Floating WhatsApp - Framer Motion */}
+      <motion.div
+        drag
+        dragConstraints={{
+          top: 0,
+          left: 0,
+          right: window.innerWidth - 80,
+          bottom: window.innerHeight - 80,
+        }}
+        dragElastic={0.2}
         style={{
           position: "fixed",
-          left: isRTL ? "auto" : `${position.x}px`,
-          right: isRTL ? `${position.x}px` : "auto",
-          top: `${position.y}px`,
-          cursor: "grab",
+          bottom: "20px",
+          [isRTL ? "left" : "right"]: "20px",
           zIndex: 9999,
         }}
-        className="group"
       >
-        <button
-          aria-label="WhatsApp"
-          className="p-4 rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600 transform hover:scale-110 hover:animate-pulse transition-all duration-300"
-        >
-          <FaWhatsapp size={28} />
-        </button>
+        <div className="relative">
+          <button
+            aria-label="WhatsApp"
+            onClick={() => setShowWhatsApp((prev) => !prev)}
+            className="p-4 rounded-full bg-green-500 text-white shadow-lg hover:bg-green-600 transform hover:scale-110 transition-all duration-300"
+          >
+            <FaWhatsapp size={28} />
+          </button>
 
-        {/* Dropdown */}
-        <div
-          className={`absolute bottom-16 ${
-            isRTL ? "left-0" : "right-0"
-          } bg-white dark:bg-gray-800 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity p-2 flex flex-col gap-2 min-w-[180px] border border-gray-200 dark:border-gray-700`}
-        >
-          <a
-            href="https://wa.me/201157035111"
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
-          >
-            WhatsApp No.1
-          </a>
-          <a
-            href="https://wa.me/201515162937"
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
-          >
-            WhatsApp No.2
-          </a>
+          {showWhatsApp && (
+            <div
+              className={`absolute bottom-16 ${
+                isRTL ? "left-0" : "right-0"
+              } bg-white dark:bg-gray-800 rounded-xl shadow-xl p-2 flex flex-col gap-2 min-w-[180px] border border-gray-200 dark:border-gray-700`}
+            >
+              <a
+                href="https://wa.me/201157035111"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
+              >
+                WhatsApp No.1
+              </a>
+              <a
+                href="https://wa.me/201515162937"
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 text-sm rounded-md hover:bg-green-100 dark:hover:bg-green-600 transition-colors"
+              >
+                WhatsApp No.2
+              </a>
+            </div>
+          )}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }
