@@ -24,20 +24,28 @@ export default function Footer() {
   const handleDown = (e) => {
     dragging.current = true;
     const rect = buttonRef.current.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
     offset.current = {
-      x: (e.clientX || e.touches[0].clientX) - rect.left,
-      y: (e.clientY || e.touches[0].clientY) - rect.top,
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     };
-    document.addEventListener("mousemove", handleMove);
+
+    document.addEventListener("mousemove", handleMove, { passive: false });
     document.addEventListener("mouseup", handleUp);
-    document.addEventListener("touchmove", handleMove);
+    document.addEventListener("touchmove", handleMove, { passive: false });
     document.addEventListener("touchend", handleUp);
   };
 
   const handleMove = (e) => {
     if (!dragging.current) return;
+
     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
     const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+    // منع سحب الصفحة في الموبايل
+    if (e.cancelable) e.preventDefault();
 
     // boundaries
     const maxX = window.innerWidth - 70;
@@ -211,7 +219,7 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Floating WhatsApp (Draggable without Framer Motion) */}
+      {/* Floating WhatsApp (Draggable) */}
       <div
         ref={buttonRef}
         onMouseDown={handleDown}
@@ -222,6 +230,7 @@ export default function Footer() {
           top: position.y,
           cursor: "grab",
           zIndex: 9999,
+          touchAction: "none", // يمنع سحب الصفحة في الموبايل
         }}
       >
         <div className="relative">
