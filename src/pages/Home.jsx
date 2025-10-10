@@ -113,7 +113,7 @@ export default function Home() {
           ) : error ? (
             <p className="text-center text-red-600">{error}</p>
           ) : filteredAndFlattenedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {filteredAndFlattenedProducts.map((p) => (
                 <ProductCard key={p._id} product={p} />
               ))}

@@ -68,7 +68,7 @@ export default function FeaturedProducts() {
           ))}
         </div>
       ) : featuredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
           {featuredProducts.map((p) => (
             <ProductCard key={p._id} product={p} />
           ))}

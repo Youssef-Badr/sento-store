@@ -409,9 +409,8 @@ export default function ProductDetails() {
   };
 
   const isSoldOut =
-  selectedVariation?.sizes?.length > 0 &&
-  selectedVariation.sizes.every((s) => s.quantity === 0);
-
+    selectedVariation?.sizes?.length > 0 &&
+    selectedVariation.sizes.every((s) => s.quantity === 0);
 
   // ⭐️ مكون عرض التقييم (لمساعدتك)
   const RatingStars = ({ value }) => {
@@ -685,7 +684,7 @@ export default function ProductDetails() {
                             }`}
                             disabled={isOutOfStock}
                           >
-                            {s.size} ({s.quantity})
+                            {s.size} {s.quantity < 10 && `(${s.quantity})`}
                           </button>
                           {isOutOfStock && (
                             <span className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs px-2 py-1 rounded-full shadow-md">
@@ -743,22 +742,22 @@ export default function ProductDetails() {
             </div>
 
             {isSoldOut ? (
-  <button
-    disabled
-    className="mt-6 flex items-center justify-center gap-2 bg-gray-400 text-white py-3 px-6 rounded-xl shadow-lg cursor-not-allowed w-full sm:w-auto font-bold text-lg"
-  >
-    {isRTL ? "غير متاح" : "Sold Out"}
-  </button>
-) : (
-  <button
-    aria-label="Add to Cart"
-    onClick={handleAddToCart}
-    className="mt-6 flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white py-3 px-6 rounded-xl shadow-lg w-full sm:w-auto font-bold text-lg transition-all"
-  >
-    <ShoppingCart size={20} />
-    {translations.addToCart}
-  </button>
-)}
+              <button
+                disabled
+                className="mt-6 flex items-center justify-center gap-2 bg-gray-400 text-white py-3 px-6 rounded-xl shadow-lg cursor-not-allowed w-full sm:w-auto font-bold text-lg"
+              >
+                {isRTL ? "غير متاح" : "Sold Out"}
+              </button>
+            ) : (
+              <button
+                aria-label="Add to Cart"
+                onClick={handleAddToCart}
+                className="mt-6 flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white py-3 px-6 rounded-xl shadow-lg w-full sm:w-auto font-bold text-lg transition-all"
+              >
+                <ShoppingCart size={20} />
+                {translations.addToCart}
+              </button>
+            )}
           </div>
         </div>
 
@@ -767,7 +766,7 @@ export default function ProductDetails() {
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
               {translations.relatedProductsTitle}
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {relatedProducts.map((rp) => (
                 <ProductCard key={rp._id} product={rp} />
               ))}
