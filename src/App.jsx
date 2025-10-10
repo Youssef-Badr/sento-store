@@ -2,6 +2,8 @@ import { Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Layout from "./components/Layout.jsx";
 import { ToastContainer } from "react-toastify";
+import ScrollToTop from "./components/ScrollToTop.jsx";
+
 import "react-toastify/dist/ReactToastify.css";
 
 // ✅ Lazy loading للصفحات
@@ -31,6 +33,8 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Layout>
+      <ScrollToTop />
+
         <Suspense
           fallback={
             <div className="flex justify-center items-center h-[60vh] text-xl font-medium text-gray-600 dark:text-gray-300">
@@ -39,6 +43,7 @@ function App() {
           }
         >
           <Routes>
+          <ScrollToTop />
             <Route path="/" element={<Home />} />
             <Route path="/products" element={<Products />} />
             <Route path="/offers" element={<Offers />} />
