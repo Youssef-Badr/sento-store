@@ -762,16 +762,19 @@ export default function ProductDetails() {
         </div>
 
         {relatedProducts.length > 0 && (
-          <div className="mt-16">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
-              {translations.relatedProductsTitle}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {relatedProducts.map((rp) => (
-                <ProductCard key={rp._id} product={rp} />
-              ))}
-            </div>
-          </div>
+         <div className="mt-16 text-center">
+         <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
+           {translations.relatedProductsTitle}
+         </h2>
+         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
+           {relatedProducts.map((rp) => (
+             <div key={rp._id} className="flex justify-center">
+               <ProductCard product={rp} />
+             </div>
+           ))}
+         </div>
+       </div>
+       
         )}
 
         {/* ⭐️ قسم التقييمات الجديد ⭐️ */}
