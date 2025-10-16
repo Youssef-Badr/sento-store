@@ -327,7 +327,7 @@ if (window.gtag) { // بيتأكد إن مكتبة Google Analytics موجودة
             className={`w-full p-3 rounded border ${borderColor} focus:outline-none focus:ring-2 focus:ring-blue-400 ${inputBg}`}
           >
             <option value="">
-              {language === "ar" ? "-:اختر مدينة الشحن" : "Select charge city:-"}
+            {language === "ar" ? "اختر مدينة الشحن:" : "Select charge city:"}
             </option>
             {citiesList.map((c) => (
               <option key={c._id} value={c.city}>
