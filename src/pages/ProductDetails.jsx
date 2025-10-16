@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext , useRef} from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 // ✅ تم إضافة Star
 import {
@@ -41,6 +41,7 @@ export default function ProductDetails() {
   const [reviewerName, setReviewerName] = useState(""); // اسم المستخدم (الضيف)
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
+  const colorsContainerRef = useRef(null);
 
   // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
   useEffect(() => {
@@ -586,18 +587,28 @@ export default function ProductDetails() {
                     {translations.colors}:
                   </h3>
                   <div
-                    className={`flex gap-4 ${isRTL ? "flex-row-reverse" : ""}`}
-                  >
+  className={`flex gap-4 overflow-x-auto py-2 ${isRTL ? "flex-row-reverse" : ""}`}
+  ref={colorsContainerRef}
+>
+
                     {product.variations?.map((v) => (
                       <button
                         aria-label="Select color"
                         key={v._id}
-                        onClick={() => {
+                        onClick={(e) => {
                           setSelectedColorId(v._id);
                           setSelectedImage(v.images?.[0]?.url || "");
                           setSelectedSizeId(null);
                           setSelectedQty(1);
+                        
+                          // 🔥 ده الجزء المهم:
+                          e.currentTarget.scrollIntoView({
+                            behavior: "smooth",
+                            inline: "center",
+                            block: "nearest",
+                          });
                         }}
+                        
                         className={`w-10 h-10 rounded-full border-4 transition-all transform ${
                           selectedColorId === v._id
                             ? "border-purple-600 dark:border-purple-400 scale-110 shadow-lg"
