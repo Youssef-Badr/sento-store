@@ -95,9 +95,7 @@ const CheckoutPage = () => {
         setDiscountInfo({ error: msg });
       }
 
-      toast.success(
-        language === "ar" ? "✅ كود الخصم صالح!" : "✅ Discount code is valid!"
-      );
+     
     } catch (err) {
       console.error(err);
       toast.error(
