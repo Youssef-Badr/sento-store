@@ -106,136 +106,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  
-  //   if (cart.length === 0) {
-  //     toast.error(language === "ar" ? "عربة التسوق فارغة ❌" : "Your cart is empty ❌");
-  //     return;
-  //   }
-  
-  //   try {
-  //     // ✅ هنا ضيف
-  //     setLoading(true);
-  
-  //     // باقي الكود بتاعك لإنشاء الـ payload والـ api.post
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error(
-  //       language === "ar"
-  //         ? `⚠️ حدث خطأ أثناء تسجيل الطلب: ${error.message}`
-  //         : `⚠️ Something went wrong: ${error.message}`
-  //     );
-  //   } finally {
-  //     // ✅ هنا ضيف
-  //     setLoading(false);
-  //   }
-  
-  
-
-  //   if (
-  //     (formData.paymentMethod === "instapay" ||
-  //       formData.paymentMethod === "vodafone") &&
-  //     !formData.transactionId &&
-  //     !formData.proofImage
-  //   ) {
-  //     toast.error(
-  //       language === "ar"
-  //         ? "⚠️ الرجاء إدخال رقم العملية أو رفع صورة الإيصال"
-  //         : "⚠️ Please provide either Transaction ID or Proof Image"
-  //     );
-  //     return;
-  //   }
-
-  //   const phoneRegex = /^(010|011|012|015)\d{8}$/;
-
-  //   if (!formData.phone) {
-  //     toast.error(
-  //       language === "ar"
-  //         ? "⚠️ الرجاء إدخال رقم الهاتف"
-  //         : "⚠️ Please provide a phone number"
-  //     );
-  //     return;
-  //   }
-
-  //   if (!phoneRegex.test(formData.phone)) {
-  //     toast.error(
-  //       language === "ar"
-  //         ? "⚠️ رقم الهاتف غير صالح، يجب أن يبدأ بـ 010 أو 011 أو 012 أو 015 ويكون 11 رقم"
-  //         : "⚠️ Invalid phone number, must start with 010, 011, 012, or 015 and be 11 digits"
-  //     );
-  //     return;
-  //   }
-
-  //   if (!formData.city || !formData.address) {
-  //     toast.error(
-  //       language === "ar"
-  //         ? "⚠️ الرجاء إدخال المدينة والعنوان"
-  //         : "⚠️ Please provide both City and Address"
-  //     );
-  //     return;
-  //   }
-
-  //   try {
-  //     const payload = new FormData();
-  //     payload.append("name", formData.name);
-  //     if (formData.email) payload.append("email", formData.email);
-  //     payload.append("phone", formData.phone);
-  //     payload.append(
-  //       "shippingAddress",
-  //       JSON.stringify({
-  //         city: formData.city,
-  //         address: formData.address,
-  //         country: "Egypt",
-  //       })
-  //     );
-  //     payload.append("paymentMethod", formData.paymentMethod);
-  //     payload.append("transactionId", formData.transactionId);
-  //     if (formData.proofImage)
-  //       payload.append("proofImage", formData.proofImage);
-
-  //     const orderItems = cart.map((item) => ({
-  //       product: item.product,
-  //       variationId: item.variationId,
-  //       sizeId: item.sizeId,
-  //       qty: item.qty,
-  //       color: item.color,
-  //       size: item.size,
-  //     }));
-
-  //     if (discountInfo && !discountInfo.error) {
-  //       payload.append("discountCode", formData.discountCode);
-  //     }
-
-  //     payload.append("orderItems", JSON.stringify(orderItems));
-
-  //     const res = await api.post("/orders", payload, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     });
-
-  //     const createdOrder = res.data;
-
-
-  //     clearCart();
-  //     toast.success(
-  //       language === "ar"
-  //         ? `🎉 شكرًا ${formData.name}! تم تسجيل طلبك بنجاح.`
-  //         : `🎉 Thank you ${formData.name}! Your order has been successfully placed.`
-  //     );
-
-  //     // 👈 لازم تبعت الـ orderId للصفحة اللي بعدها
-  //     navigate(`/thankyou/${createdOrder._id || createdOrder.order?._id}`);
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error(
-  //       language === "ar"
-  //         ? `⚠️ حدث خطأ أثناء تسجيل الطلب: ${error.message}`
-  //         : `⚠️ Something went wrong while submitting your order: ${error.message}`
-  //     );
-  //   }
-  // };
-
-
+ 
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -456,7 +327,7 @@ if (window.gtag) { // بيتأكد إن مكتبة Google Analytics موجودة
             className={`w-full p-3 rounded border ${borderColor} focus:outline-none focus:ring-2 focus:ring-blue-400 ${inputBg}`}
           >
             <option value="">
-              {language === "ar" ? "اختر مدينة الشحن" : "Select charge city"}
+              {language === "ar" ? "-:اختر مدينة الشحن" : "Select charge city:-"}
             </option>
             {citiesList.map((c) => (
               <option key={c._id} value={c.city}>
