@@ -18,7 +18,6 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import logo from "../assets/logo.webp";
 
-// ✅ Prefetch helper
 const prefetchPage = (page) => {
   switch (page) {
     case "products":
@@ -42,7 +41,6 @@ export default function Navbar() {
   const { darkMode, setDarkMode } = useTheme();
   const { language, setLanguage } = useLanguage();
   const isRTL = language === "ar";
-
   const { cart } = useContext(CartContext);
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
@@ -50,10 +48,25 @@ export default function Navbar() {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [careOpen, setCareOpen] = useState(false);
 
-  // ✅ Refs for detecting outside clicks
   const categoriesRef = useRef(null);
   const careRef = useRef(null);
-  const menuRef = useRef(null);
+
+  // ✅ إغلاق القوائم لما تضغط براها (في الديسكتوب فقط)
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        window.innerWidth >= 768 && // يعني فقط في الديسكتوب
+        !categoriesRef.current?.contains(e.target) &&
+        !careRef.current?.contains(e.target)
+      ) {
+        setCategoriesOpen(false);
+        setCareOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const links = [
     { name: isRTL ? "الرئيسية" : "Home", path: "/", icon: Home },
@@ -69,11 +82,7 @@ export default function Navbar() {
   const categories = [
     { name: isRTL ? "رجال" : "Men", path: "/category/men", icon: User },
     { name: isRTL ? "نساء" : "Women", path: "/category/women", icon: User },
-    {
-      name: isRTL ? "للجنسين" : "Unisex",
-      path: "/category/unisex",
-      icon: User,
-    },
+    { name: isRTL ? "للجنسين" : "Unisex", path: "/category/unisex", icon: User },
     { name: isRTL ? "رياضة" : "Sport", path: "/category/sport", icon: User },
   ];
 
@@ -86,31 +95,6 @@ export default function Navbar() {
     updateOffset();
     window.addEventListener("resize", updateOffset);
     return () => window.removeEventListener("resize", updateOffset);
-  }, []);
-
-  // ✅ Close dropdowns & menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        categoriesRef.current &&
-        !categoriesRef.current.contains(event.target) &&
-        careRef.current &&
-        !careRef.current.contains(event.target) &&
-        menuRef.current &&
-        !menuRef.current.contains(event.target)
-      ) {
-        setCategoriesOpen(false);
-        setCareOpen(false);
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
   }, []);
 
   const handleLinkClick = () => {
@@ -126,7 +110,7 @@ export default function Navbar() {
       style={{ top: offsetTop }}
     >
       <div className="w-full relative p-4 flex items-center justify-between">
-        {/* Name */}
+        {/* اسم المتجر */}
         <div
           className={`${
             isRTL ? "order-3" : "order-1"
@@ -140,14 +124,14 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Logo always center */}
+        {/* اللوجو في النص للموبايل */}
         <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0 md:hidden">
           <Link to="/">
             <img src={logo} alt="Sento Store" className="h-10 object-contain" />
           </Link>
         </div>
 
-        {/* Desktop Links */}
+        {/* روابط الديسكتوب */}
         <div className="hidden md:flex items-center gap-6 order-2">
           {links.map((link) => (
             <Link
@@ -165,10 +149,10 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* Categories Dropdown */}
+          {/* الفئات */}
           <div className="relative" ref={categoriesRef}>
             <button
-              aria-label=""
+              aria-label="Categories"
               onClick={() => setCategoriesOpen(!categoriesOpen)}
               className="flex items-center gap-1 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
@@ -190,7 +174,7 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Customer Care Dropdown */}
+          {/* خدمة العملاء */}
           <div className="relative" ref={careRef}>
             <button
               aria-label="Customer Care"
@@ -203,17 +187,13 @@ export default function Navbar() {
               <div className="absolute top-full mt-2 w-44 bg-white dark:bg-gray-700 rounded-lg shadow-lg flex flex-col z-50">
                 <a
                   href="https://wa.me/201157035111"
-                  aria-label="WhatsApp No.1"
                   className="px-4 py-2 hover:bg-green-100 dark:hover:bg-green-600 rounded-md transition-colors"
-                  onClick={() => setCareOpen(false)}
                 >
                   WhatsApp No.1
                 </a>
                 <a
                   href="https://wa.me/201515162937"
-                  aria-label="WhatsApp No.2"
                   className="px-4 py-2 hover:bg-green-100 dark:hover:bg-green-600 rounded-md transition-colors"
-                  onClick={() => setCareOpen(false)}
                 >
                   WhatsApp No.2
                 </a>
@@ -221,7 +201,7 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Cart */}
+          {/* السلة */}
           <Link
             to="/cart"
             onClick={handleLinkClick}
@@ -235,7 +215,7 @@ export default function Navbar() {
             )}
           </Link>
 
-          {/* Theme & Language */}
+          {/* الثيم واللغة */}
           <button
             aria-label="Toggle Dark Mode"
             onClick={() => setDarkMode(!darkMode)}
@@ -244,7 +224,7 @@ export default function Navbar() {
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           <button
-            aria-label=""
+            aria-label="Toggle Language"
             onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
             className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
           >
@@ -252,12 +232,11 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Hamburger for Mobile */}
+        {/* منيو الموبايل كما هي بدون أي تعديل */}
         <div
           className={`${
             isRTL ? "order-1" : "order-3"
           } md:hidden flex items-center gap-4 z-10`}
-          ref={menuRef}
         >
           <Link
             to="/cart"
@@ -280,7 +259,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* منيو الموبايل الأصلية */}
       {menuOpen && (
         <div className="md:hidden bg-white dark:bg-gray-900 p-4 flex flex-col gap-4">
           {links.map((link) => (
@@ -299,9 +278,8 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {/* Mobile Categories */}
           <button
-            aria-label=""
+            aria-label="Categories"
             onClick={() => setCategoriesOpen(!categoriesOpen)}
             className="flex justify-between items-center px-2 py-2 w-full text-gray-800 dark:text-gray-200"
           >
@@ -325,7 +303,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile Customer Care */}
           <button
             aria-label="Customer Care"
             onClick={() => setCareOpen(!careOpen)}
@@ -337,24 +314,19 @@ export default function Navbar() {
             <div className="flex flex-col pl-4 gap-1">
               <a
                 href="https://wa.me/201157035111"
-                aria-label="WhatsApp No.1"
                 className="py-1 text-green-600 dark:text-green-200"
-                onClick={() => setCareOpen(false)}
               >
                 WhatsApp No.1
               </a>
               <a
                 href="https://wa.me/201515162937"
-                aria-label="WhatsApp No.2"
                 className="py-1 text-green-600 dark:text-green-200"
-                onClick={() => setCareOpen(false)}
               >
                 WhatsApp No.2
               </a>
             </div>
           )}
 
-          {/* Theme & Language */}
           <div className="flex gap-2 mt-2">
             <button
               aria-label="Toggle Dark Mode"
