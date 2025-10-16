@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { CartContext } from "../contexts/CartContext";
 import {
   Menu,
@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
-// import logo from "../assets/logo.png?width=200&format=webp&as=src";
 import logo from "../assets/logo.webp";
 
 // ✅ Prefetch helper
@@ -51,6 +50,11 @@ export default function Navbar() {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [careOpen, setCareOpen] = useState(false);
 
+  // ✅ Refs for detecting outside clicks
+  const categoriesRef = useRef(null);
+  const careRef = useRef(null);
+  const menuRef = useRef(null);
+
   const links = [
     { name: isRTL ? "الرئيسية" : "Home", path: "/", icon: Home },
     {
@@ -82,6 +86,31 @@ export default function Navbar() {
     updateOffset();
     window.addEventListener("resize", updateOffset);
     return () => window.removeEventListener("resize", updateOffset);
+  }, []);
+
+  // ✅ Close dropdowns & menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        categoriesRef.current &&
+        !categoriesRef.current.contains(event.target) &&
+        careRef.current &&
+        !careRef.current.contains(event.target) &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target)
+      ) {
+        setCategoriesOpen(false);
+        setCareOpen(false);
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
 
   const handleLinkClick = () => {
@@ -137,9 +166,9 @@ export default function Navbar() {
           ))}
 
           {/* Categories Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={categoriesRef}>
             <button
-            aria-label=""
+              aria-label=""
               onClick={() => setCategoriesOpen(!categoriesOpen)}
               className="flex items-center gap-1 px-3 py-2 rounded-md text-gray-800 dark:text-gray-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
             >
@@ -162,9 +191,9 @@ export default function Navbar() {
           </div>
 
           {/* Customer Care Dropdown */}
-          <div className="relative">
+          <div className="relative" ref={careRef}>
             <button
-            aria-label="Customer Care"
+              aria-label="Customer Care"
               onClick={() => setCareOpen(!careOpen)}
               className="flex items-center gap-1 px-3 py-2 rounded-md text-green-600 dark:text-green-400 hover:text-green-400 dark:hover:text-green-200 transition-colors"
             >
@@ -174,7 +203,7 @@ export default function Navbar() {
               <div className="absolute top-full mt-2 w-44 bg-white dark:bg-gray-700 rounded-lg shadow-lg flex flex-col z-50">
                 <a
                   href="https://wa.me/201157035111"
-                    aria-label="WhatsApp No.1"
+                  aria-label="WhatsApp No.1"
                   className="px-4 py-2 hover:bg-green-100 dark:hover:bg-green-600 rounded-md transition-colors"
                   onClick={() => setCareOpen(false)}
                 >
@@ -208,14 +237,14 @@ export default function Navbar() {
 
           {/* Theme & Language */}
           <button
-          aria-label="Toggle Dark Mode"
+            aria-label="Toggle Dark Mode"
             onClick={() => setDarkMode(!darkMode)}
             className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
           >
             {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           <button
-          aria-label=""
+            aria-label=""
             onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
             className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
           >
@@ -228,6 +257,7 @@ export default function Navbar() {
           className={`${
             isRTL ? "order-1" : "order-3"
           } md:hidden flex items-center gap-4 z-10`}
+          ref={menuRef}
         >
           <Link
             to="/cart"
@@ -241,7 +271,7 @@ export default function Navbar() {
             )}
           </Link>
           <button
-          aria-label="Toggle Menu"
+            aria-label="Toggle Menu"
             onClick={() => setMenuOpen(!menuOpen)}
             className={darkMode ? "text-white" : "text-gray-800"}
           >
@@ -271,7 +301,7 @@ export default function Navbar() {
 
           {/* Mobile Categories */}
           <button
-          aria-label=""
+            aria-label=""
             onClick={() => setCategoriesOpen(!categoriesOpen)}
             className="flex justify-between items-center px-2 py-2 w-full text-gray-800 dark:text-gray-200"
           >
@@ -297,7 +327,7 @@ export default function Navbar() {
 
           {/* Mobile Customer Care */}
           <button
-          aria-label="Customer Care"
+            aria-label="Customer Care"
             onClick={() => setCareOpen(!careOpen)}
             className="flex justify-between items-center px-2 py-2 w-full text-green-600 dark:text-green-400"
           >
@@ -307,7 +337,7 @@ export default function Navbar() {
             <div className="flex flex-col pl-4 gap-1">
               <a
                 href="https://wa.me/201157035111"
-                  aria-label="WhatsApp No.1"
+                aria-label="WhatsApp No.1"
                 className="py-1 text-green-600 dark:text-green-200"
                 onClick={() => setCareOpen(false)}
               >
@@ -315,7 +345,7 @@ export default function Navbar() {
               </a>
               <a
                 href="https://wa.me/201515162937"
-                  aria-label="WhatsApp No.2"
+                aria-label="WhatsApp No.2"
                 className="py-1 text-green-600 dark:text-green-200"
                 onClick={() => setCareOpen(false)}
               >
@@ -327,14 +357,14 @@ export default function Navbar() {
           {/* Theme & Language */}
           <div className="flex gap-2 mt-2">
             <button
-            aria-label="Toggle Dark Mode"
+              aria-label="Toggle Dark Mode"
               onClick={() => setDarkMode(!darkMode)}
               className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
             >
               {darkMode ? <Sun size={16} /> : <Moon size={16} />}
             </button>
             <button
-            aria-label="Toggle Language"
+              aria-label="Toggle Language"
               onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
               className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
             >
