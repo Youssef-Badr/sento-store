@@ -323,6 +323,46 @@ export default function ProductDetails() {
     }
   }, [selectedSizeId, selectedColorId, selectedQty, product]);
 
+  // ✅ Scroll selected color into view when it’s selected automatically
+// ✅ Scroll to selected color after product load or color change
+useEffect(() => {
+  const container = colorsContainerRef.current;
+  if (!container || !selectedColorId) return;
+
+  // هنكرر المحاولة كذا مرة لحد ما الأزرار تبقى جاهزة فعلاً
+  let attempts = 0;
+  const maxAttempts = 10;
+
+  const scrollToSelected = () => {
+    const selectedBtn = container.querySelector(
+      `[data-color-id='${selectedColorId}']`
+    );
+    if (selectedBtn) {
+      const containerWidth = container.offsetWidth;
+      const buttonLeft = selectedBtn.offsetLeft;
+      const buttonWidth = selectedBtn.offsetWidth;
+      const scrollPosition = buttonLeft - containerWidth / 2 + buttonWidth / 2;
+
+      container.scrollTo({
+        left: scrollPosition,
+        behavior: "smooth",
+      });
+      return true; // تم بنجاح
+    }
+    return false; // لسه الزر مش موجود
+  };
+
+  const tryScroll = () => {
+    if (scrollToSelected()) return; // لو اشتغلت خلاص نوقف
+    attempts++;
+    if (attempts < maxAttempts) {
+      setTimeout(tryScroll, 150); // نحاول تاني بعد 150ms
+    }
+  };
+
+  tryScroll();
+}, [selectedColorId]);
+
   if (error)
     return (
       <div className="container mx-auto p-4 text-red-600 dark:text-red-400 pt-20 text-center">
@@ -505,7 +545,7 @@ export default function ProductDetails() {
                 <img
                   src={selectedImage}
                   alt={product.name}
-                  className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+                  className="w-full h-full object-fit transition-transform duration-300 hover:scale-105"
                 />
               ) : (
                 <div className="text-gray-500 dark:text-gray-400">
@@ -595,19 +635,31 @@ export default function ProductDetails() {
                       <button
                         aria-label="Select color"
                         key={v._id}
-                        onClick={(e) => {
+                        data-color-id={v._id} // ✅ مهم جداً
+                        onClick={() => {
                           setSelectedColorId(v._id);
                           setSelectedImage(v.images?.[0]?.url || "");
                           setSelectedSizeId(null);
                           setSelectedQty(1);
                         
-                          // 🔥 ده الجزء المهم:
-                          e.currentTarget.scrollIntoView({
-                            behavior: "smooth",
-                            inline: "center",
-                            block: "nearest",
-                          });
+                          // ✅ حرك السكرول بحيث اللون المختار يظهر في النص داخل الـdiv
+                          const container = colorsContainerRef.current;
+                          if (container) {
+                            const selectedBtn = container.querySelector(`[data-color-id='${v._id}']`);
+                            if (selectedBtn) {
+                              const containerWidth = container.offsetWidth;
+                              const buttonLeft = selectedBtn.offsetLeft;
+                              const buttonWidth = selectedBtn.offsetWidth;
+                              const scrollPosition = buttonLeft - containerWidth / 2 + buttonWidth / 2;
+                        
+                              container.scrollTo({
+                                left: scrollPosition,
+                                behavior: "smooth",
+                              });
+                            }
+                          }
                         }}
+                        
                         
                         className={`w-10 h-10 rounded-full border-4 transition-all transform ${
                           selectedColorId === v._id
