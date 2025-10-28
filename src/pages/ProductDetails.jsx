@@ -559,7 +559,7 @@ export default function ProductDetails() {
   )}
 </div> */}
 
-<div className="relative w-full aspect-[4:3] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
+<div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
   {selectedImage ? (
     <img
       src={selectedImage}
