@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext , useRef} from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 // ✅ تم إضافة Star
 import {
@@ -324,44 +324,45 @@ export default function ProductDetails() {
   }, [selectedSizeId, selectedColorId, selectedQty, product]);
 
   // ✅ Scroll selected color into view when it’s selected automatically
-// ✅ Scroll to selected color after product load or color change
-useEffect(() => {
-  const container = colorsContainerRef.current;
-  if (!container || !selectedColorId) return;
+  // ✅ Scroll to selected color after product load or color change
+  useEffect(() => {
+    const container = colorsContainerRef.current;
+    if (!container || !selectedColorId) return;
 
-  // هنكرر المحاولة كذا مرة لحد ما الأزرار تبقى جاهزة فعلاً
-  let attempts = 0;
-  const maxAttempts = 10;
+    // هنكرر المحاولة كذا مرة لحد ما الأزرار تبقى جاهزة فعلاً
+    let attempts = 0;
+    const maxAttempts = 10;
 
-  const scrollToSelected = () => {
-    const selectedBtn = container.querySelector(
-      `[data-color-id='${selectedColorId}']`
-    );
-    if (selectedBtn) {
-      const containerWidth = container.offsetWidth;
-      const buttonLeft = selectedBtn.offsetLeft;
-      const buttonWidth = selectedBtn.offsetWidth;
-      const scrollPosition = buttonLeft - containerWidth / 2 + buttonWidth / 2;
+    const scrollToSelected = () => {
+      const selectedBtn = container.querySelector(
+        `[data-color-id='${selectedColorId}']`
+      );
+      if (selectedBtn) {
+        const containerWidth = container.offsetWidth;
+        const buttonLeft = selectedBtn.offsetLeft;
+        const buttonWidth = selectedBtn.offsetWidth;
+        const scrollPosition =
+          buttonLeft - containerWidth / 2 + buttonWidth / 2;
 
-      container.scrollTo({
-        left: scrollPosition,
-        behavior: "smooth",
-      });
-      return true; // تم بنجاح
-    }
-    return false; // لسه الزر مش موجود
-  };
+        container.scrollTo({
+          left: scrollPosition,
+          behavior: "smooth",
+        });
+        return true; // تم بنجاح
+      }
+      return false; // لسه الزر مش موجود
+    };
 
-  const tryScroll = () => {
-    if (scrollToSelected()) return; // لو اشتغلت خلاص نوقف
-    attempts++;
-    if (attempts < maxAttempts) {
-      setTimeout(tryScroll, 150); // نحاول تاني بعد 150ms
-    }
-  };
+    const tryScroll = () => {
+      if (scrollToSelected()) return; // لو اشتغلت خلاص نوقف
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(tryScroll, 150); // نحاول تاني بعد 150ms
+      }
+    };
 
-  tryScroll();
-}, [selectedColorId]);
+    tryScroll();
+  }, [selectedColorId]);
 
   if (error)
     return (
@@ -540,19 +541,38 @@ useEffect(() => {
 
         <div className="flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="md:w-1/2 flex flex-col items-center">
-            <div className="w-full h-80 sm:h-96 lg:h-[600px] bg-gray-100 dark:bg-gray-800 rounded-2xl mb-4 flex items-center justify-center overflow-hidden shadow-2xl">
-              {selectedImage ? (
-                <img
-                  src={selectedImage}
-                  alt={product.name}
-                  className="w-full h-full object-fit transition-transform duration-300 hover:scale-105"
-                />
-              ) : (
-                <div className="text-gray-500 dark:text-gray-400">
-                  {translations.noImage}
-                </div>
-              )}
-            </div>
+          
+{/* <div className="relative w-full flex items-center justify-center mb-4 rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
+  {selectedImage ? (
+    <img
+      src={selectedImage}
+      alt={product.name}
+      className="w-auto h-auto max-w-full max-h-[90vh] object-cover transition-transform duration-300 hover:scale-105"
+      style={{
+        display: "block",
+      }}
+    />
+  ) : (
+    <div className="text-gray-500 dark:text-gray-400 text-center p-10">
+      {translations.noImage}
+    </div>
+  )}
+</div> */}
+
+<div className="relative w-full aspect-[4:3] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
+  {selectedImage ? (
+    <img
+      src={selectedImage}
+      alt={product.name}
+      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+    />
+  ) : (
+    <div className="text-gray-500 dark:text-gray-400 text-center p-10">
+      {translations.noImage}
+    </div>
+  )}
+</div>
+
             <div
               className={`flex gap-4 overflow-x-auto py-2 ${
                 isRTL ? "flex-row-reverse" : ""
@@ -627,10 +647,11 @@ useEffect(() => {
                     {translations.colors}:
                   </h3>
                   <div
-  className={`flex gap-4 overflow-x-auto py-2 ${isRTL ? "flex-row-reverse" : ""}`}
-  ref={colorsContainerRef}
->
-
+                    className={`flex gap-4 overflow-x-auto py-2 ${
+                      isRTL ? "flex-row-reverse" : ""
+                    }`}
+                    ref={colorsContainerRef}
+                  >
                     {product.variations?.map((v) => (
                       <button
                         aria-label="Select color"
@@ -641,17 +662,22 @@ useEffect(() => {
                           setSelectedImage(v.images?.[0]?.url || "");
                           setSelectedSizeId(null);
                           setSelectedQty(1);
-                        
+
                           // ✅ حرك السكرول بحيث اللون المختار يظهر في النص داخل الـdiv
                           const container = colorsContainerRef.current;
                           if (container) {
-                            const selectedBtn = container.querySelector(`[data-color-id='${v._id}']`);
+                            const selectedBtn = container.querySelector(
+                              `[data-color-id='${v._id}']`
+                            );
                             if (selectedBtn) {
                               const containerWidth = container.offsetWidth;
                               const buttonLeft = selectedBtn.offsetLeft;
                               const buttonWidth = selectedBtn.offsetWidth;
-                              const scrollPosition = buttonLeft - containerWidth / 2 + buttonWidth / 2;
-                        
+                              const scrollPosition =
+                                buttonLeft -
+                                containerWidth / 2 +
+                                buttonWidth / 2;
+
                               container.scrollTo({
                                 left: scrollPosition,
                                 behavior: "smooth",
@@ -659,8 +685,6 @@ useEffect(() => {
                             }
                           }
                         }}
-                        
-                        
                         className={`w-10 h-10 rounded-full border-4 transition-all transform ${
                           selectedColorId === v._id
                             ? "border-purple-600 dark:border-purple-400 scale-110 shadow-lg"
@@ -825,19 +849,18 @@ useEffect(() => {
         </div>
 
         {relatedProducts.length > 0 && (
-         <div className="mt-16 text-center">
-         <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
-           {translations.relatedProductsTitle}
-         </h2>
-         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
-           {relatedProducts.map((rp) => (
-             <div key={rp._id} className="flex justify-center">
-               <ProductCard product={rp} />
-             </div>
-           ))}
-         </div>
-       </div>
-       
+          <div className="mt-16 text-center">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
+              {translations.relatedProductsTitle}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
+              {relatedProducts.map((rp) => (
+                <div key={rp._id} className="flex justify-center">
+                  <ProductCard product={rp} />
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* ⭐️ قسم التقييمات الجديد ⭐️ */}
