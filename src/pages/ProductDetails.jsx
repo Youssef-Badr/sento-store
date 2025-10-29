@@ -889,7 +889,7 @@ const scrollToThumbnail = (imgUrl) => {
               e.stopPropagation();
               setIsLightboxOpen(false);
             }}
-            className="absolute top-8 right-6 text-white text-3xl z-50 hover:text-gray-300 transition"
+            className="absolute top-12 right-6 text-white text-3xl z-50 hover:text-gray-300 transition"
             aria-label="Close"
           >
             <X size={36} />
