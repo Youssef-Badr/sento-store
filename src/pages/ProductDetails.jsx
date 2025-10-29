@@ -866,7 +866,7 @@ const scrollToThumbnail = (imgUrl) => {
         {isLightboxOpen && (
         <div
           className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-          onClick={() => setIsLightboxOpen(false)}
+          onClick={() => setIsLightboxOpen(false)} // 👈 الضغط في أي مكان خارجي يقفل
           onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
           onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
           onTouchEnd={() => {
@@ -874,40 +874,53 @@ const scrollToThumbnail = (imgUrl) => {
             const diff = touchStart - touchEnd;
 
             if (diff > 50) {
-              // 👈 سحب لليسار → الصورة اللي بعدها
-              nextLightbox();
+              nextLightbox(); // 👈 سحب لليسار → الصورة اللي بعدها
             } else if (diff < -50) {
-              // 👉 سحب لليمين → الصورة اللي قبلها
-              prevLightbox();
+              prevLightbox(); // 👉 سحب لليمين → الصورة اللي قبلها
             }
 
             setTouchStart(null);
             setTouchEnd(null);
           }}
         >
+          {/* ❌ زر الإغلاق */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsLightboxOpen(false);
+            }}
+            className="absolute top-6 right-6 text-white text-3xl z-50 hover:text-gray-300 transition"
+            aria-label="Close"
+          >
+            <X size={36} />
+          </button>
+
+          {/* 👈 زر الصورة السابقة */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               prevLightbox();
             }}
-            className="absolute left-5 text-white text-4xl font-bold z-50"
+            className="absolute left-5 text-white text-4xl font-bold z-50 hover:text-gray-300 transition"
           >
             ‹
           </button>
 
+          {/* 🖼️ الصورة */}
           <img
             src={lightboxImages[lightboxIndex]?.url}
             alt={product?.name}
             className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()} // عشان الضغط على الصورة مايقفلش المودال
           />
 
+          {/* 👉 زر الصورة التالية */}
           <button
             onClick={(e) => {
               e.stopPropagation();
               nextLightbox();
             }}
-            className="absolute right-5 text-white text-4xl font-bold z-50"
+            className="absolute right-5 text-white text-4xl font-bold z-50 hover:text-gray-300 transition"
           >
             ›
           </button>
