@@ -226,31 +226,7 @@ const isSoldOut =
         </div>
       </div>
 
-      {/* Add to Cart Button
-      <button
-        aria-labelledby=""
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (availableSizes.length > 0) setShowSizeSelector(true);
-          else
-            toast.error(
-              language === "ar"
-                ? "⚠️ هذا المنتج غير متاح حاليًا"
-                : "⚠️ This product is currently unavailable"
-            );
-        }}
-        className={`absolute bottom-4 left-1/2 -translate-x-1/2
-bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700
- text-white font-semibold rounded-full shadow-lg hover:shadow-xl
- transition-all duration-300 ease-in-out
- w-[85%] px-3 py-2 text-sm opacity-100 translate-y-0
-sm:w-auto sm:px-5 sm:py-2.5 sm:text-base sm:opacity-0 sm:translate-y-6
-sm:group-hover:opacity-100 sm:group-hover:translate-y-0`}
-      >
-        {isRTL ? "أضف إلى السلة" : "Add to Cart"}
-      </button> */}
-{/* Add to Cart / Sold Out */}
+      
 {isSoldOut ? (
   <div
     className="absolute bottom-4 left-1/2 -translate-x-1/2

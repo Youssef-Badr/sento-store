@@ -9,6 +9,8 @@ import {
   Plus,
   X,
   Star,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useTheme } from "../contexts/ThemeContext";
@@ -30,6 +32,8 @@ export default function ProductDetails() {
   const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
   const [showSizeChart, setShowSizeChart] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const thumbnailsContainerRef = useRef(null); // ✅ هنا عرفنا الريف
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -42,7 +46,10 @@ export default function ProductDetails() {
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [hasReviewed, setHasReviewed] = useState(false);
   const colorsContainerRef = useRef(null);
-
+  // ⭐️ Lightbox state
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxImages, setLightboxImages] = useState([]);
   // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
   useEffect(() => {
     if (product && window.fbq) {
@@ -237,6 +244,13 @@ export default function ProductDetails() {
         setSelectedSizeId(null);
         setSelectedQty(1);
 
+        // Lightbox images
+        const allImgs =
+          prod.variations?.flatMap((v) =>
+            (v.images || []).map((img) => ({ ...img, variationId: v._id }))
+          ) || [];
+        setLightboxImages(allImgs);
+
         // ✅ Products related logic
         if (
           prod.category &&
@@ -322,46 +336,48 @@ export default function ProductDetails() {
       }
     }
   }, [selectedSizeId, selectedColorId, selectedQty, product]);
-
-  // ✅ Scroll selected color into view when it’s selected automatically
-  // ✅ Scroll to selected color after product load or color change
-  useEffect(() => {
+  const scrollToColor = (colorId) => {
     const container = colorsContainerRef.current;
-    if (!container || !selectedColorId) return;
+    if (!container) return;
 
-    // هنكرر المحاولة كذا مرة لحد ما الأزرار تبقى جاهزة فعلاً
-    let attempts = 0;
-    const maxAttempts = 10;
+    const btn = container.querySelector(`[data-color-id='${colorId}']`);
+    if (!btn) return;
 
-    const scrollToSelected = () => {
-      const selectedBtn = container.querySelector(
-        `[data-color-id='${selectedColorId}']`
-      );
-      if (selectedBtn) {
-        const containerWidth = container.offsetWidth;
-        const buttonLeft = selectedBtn.offsetLeft;
-        const buttonWidth = selectedBtn.offsetWidth;
-        const scrollPosition =
+    const scrollPos =
+      btn.offsetLeft - container.offsetWidth / 2 + btn.offsetWidth / 2;
+
+    container.scrollTo({ left: scrollPos, behavior: "smooth" });
+  };
+  // 🟢 تعريف دالة التمرير للـ Thumbnails
+const scrollToThumbnail = (imgUrl) => {
+  const container = thumbnailsContainerRef.current;
+  if (!container) return;
+
+  // البحث عن زر الصورة باستخدام الـ data-img-url الذي وضعته أنت
+  const selectedBtn = container.querySelector(
+      `[data-img-url='${imgUrl}']`
+  );
+
+  if (selectedBtn) {
+      // منطق تمرير العنصر ليظهر في منتصف الحاوية (مهم لتجربة المستخدم)
+      const containerWidth = container.offsetWidth;
+      const buttonLeft = selectedBtn.offsetLeft;
+      const buttonWidth = selectedBtn.offsetWidth;
+      
+      // حساب موضع التمرير لمركز الزر
+      const scrollPosition = 
           buttonLeft - containerWidth / 2 + buttonWidth / 2;
 
-        container.scrollTo({
+      container.scrollTo({
           left: scrollPosition,
           behavior: "smooth",
-        });
-        return true; // تم بنجاح
-      }
-      return false; // لسه الزر مش موجود
-    };
+      });
+  }
+};
 
-    const tryScroll = () => {
-      if (scrollToSelected()) return; // لو اشتغلت خلاص نوقف
-      attempts++;
-      if (attempts < maxAttempts) {
-        setTimeout(tryScroll, 150); // نحاول تاني بعد 150ms
-      }
-    };
-
-    tryScroll();
+  // ✅ Scroll selected color into view when it’s selected automatically
+  useEffect(() => {
+    scrollToColor(selectedColorId);
   }, [selectedColorId]);
 
   if (error)
@@ -381,13 +397,13 @@ export default function ProductDetails() {
     (v) => v._id === selectedColorId
   );
 
-  const allImages =
-    product.variations?.flatMap((v) =>
-      (v.images || []).map((img) => ({
-        ...img,
-        variationId: v._id,
-      }))
-    ) || [];
+  // const allImages =
+  //   product.variations?.flatMap((v) =>
+  //     (v.images || []).map((img) => ({
+  //       ...img,
+  //       variationId: v._id,
+  //     }))
+  //   ) || [];
 
   const handleAddToCart = () => {
     if (!product?._id) {
@@ -441,13 +457,32 @@ export default function ProductDetails() {
     );
   };
 
-  const handleThumbnailClick = (img) => {
-    setSelectedImage(img.url);
-    if (img.variationId) {
-      setSelectedColorId(img.variationId);
-      setSelectedSizeId(null);
-      setSelectedQty(1);
-    }
+ 
+  
+
+  // const handleThumbnailClick = (img) => {
+  //   setSelectedImage(img.url);
+  //   if (img.variationId) {
+  //     setSelectedColorId(img.variationId);
+  //     setSelectedSizeId(null);
+  //     setSelectedQty(1);
+  //   }
+  // };
+  const openLightbox = (img) => {
+    if (!lightboxImages.length) return;
+    const index = lightboxImages.findIndex((i) => i.url === img.url);
+    setLightboxIndex(index >= 0 ? index : 0);
+    setIsLightboxOpen(true);
+  };
+
+  const nextLightbox = () => {
+    setLightboxIndex((prev) => (prev + 1) % lightboxImages.length);
+  };
+
+  const prevLightbox = () => {
+    setLightboxIndex((prev) =>
+      prev === 0 ? lightboxImages.length - 1 : prev - 1
+    );
   };
 
   const isSoldOut =
@@ -541,8 +576,7 @@ export default function ProductDetails() {
 
         <div className="flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="md:w-1/2 flex flex-col items-center">
-          
-{/* <div className="relative w-full flex items-center justify-center mb-4 rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
+            {/* <div className="relative w-full flex items-center justify-center mb-4 rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
   {selectedImage ? (
     <img
       src={selectedImage}
@@ -559,44 +593,58 @@ export default function ProductDetails() {
   )}
 </div> */}
 
-<div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
-  {selectedImage ? (
-    <img
-      src={selectedImage}
-      alt={product.name}
-      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-    />
-  ) : (
-    <div className="text-gray-500 dark:text-gray-400 text-center p-10">
-      {translations.noImage}
-    </div>
-  )}
-</div>
-
-            <div
-              className={`flex gap-4 overflow-x-auto py-2 ${
-                isRTL ? "flex-row-reverse" : ""
-              }`}
-            >
-              {allImages.map((img) => (
-                <button
-                  aria-label="Select product image"
-                  key={img._id || img.url}
-                  onClick={() => handleThumbnailClick(img)}
-                  className={`flex-shrink-0 rounded-xl border-2 transition-all p-1 ${
-                    selectedImage === img.url
-                      ? "border-purple-600 dark:border-purple-400 shadow-lg"
-                      : "border-gray-300 dark:border-gray-700 hover:border-purple-400"
-                  }`}
-                >
-                  <img
-                    src={img.url}
-                    alt={product.name}
-                    className="w-20 h-20 object-cover rounded-lg bg-gray-200 dark:bg-gray-700"
-                  />
-                </button>
-              ))}
+            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
+              {selectedImage ? (
+                <img
+                  onClick={() => openLightbox({ url: selectedImage })}
+                  src={selectedImage}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
+              ) : (
+                <div className="text-gray-500 dark:text-gray-400 text-center p-10">
+                  {translations.noImage}
+                </div>
+              )}
             </div>
+
+           {/* ✅ هذا الشريط يجب أن يعرض فقط صور المتغير المحدد حاليًا (selectedVariation) */}
+<div className="mb-6">
+    <div
+        ref={thumbnailsContainerRef}
+        className={`flex gap-4 overflow-x-auto p-2 ${
+            isRTL ? "flex-row-reverse" : ""
+        } scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent`}
+    >
+        {/* 💡 نستخدم selectedVariation.images بدلاً من allImages */}
+        {selectedVariation?.images?.map((img, index) => ( 
+            <button
+                data-img-url={img.url}
+                aria-label={`Product image ${index + 1}`}
+                key={img._id || img.url}
+                onClick={() => {
+                    // نستخدم setSelectedImageIndex بدلاً من handleThumbnailClick لتحديث الصورة الرئيسية
+                    setSelectedImageIndex(index); 
+                    
+                    // 💡 الأهم: عند النقر على الصورة، مرر الشريط لإظهارها في المنتصف
+                    scrollToThumbnail(img.url);
+                }}
+                className={`flex-shrink-0 rounded-xl border-2 transition-all p-1 ${
+                    // نستخدم selectedImageIndex === index لتحديد الصورة المختارة
+                    selectedImageIndex === index 
+                        ? "border-purple-600 dark:border-purple-400 shadow-lg scale-105"
+                        : "border-gray-300 dark:border-gray-700 hover:border-purple-400"
+                }`}
+            >
+                <img
+                    src={img.url}
+                    alt={`${product.name} - ${selectedVariation.color} - image ${index + 1}`}
+                    className="w-20 h-20 object-cover rounded-lg bg-gray-200 dark:bg-gray-700"
+                />
+            </button>
+        ))}
+    </div>
+</div>
           </div>
 
           <div className="md:w-1/2 flex flex-col justify-between p-4">
@@ -662,28 +710,7 @@ export default function ProductDetails() {
                           setSelectedImage(v.images?.[0]?.url || "");
                           setSelectedSizeId(null);
                           setSelectedQty(1);
-
-                          // ✅ حرك السكرول بحيث اللون المختار يظهر في النص داخل الـdiv
-                          const container = colorsContainerRef.current;
-                          if (container) {
-                            const selectedBtn = container.querySelector(
-                              `[data-color-id='${v._id}']`
-                            );
-                            if (selectedBtn) {
-                              const containerWidth = container.offsetWidth;
-                              const buttonLeft = selectedBtn.offsetLeft;
-                              const buttonWidth = selectedBtn.offsetWidth;
-                              const scrollPosition =
-                                buttonLeft -
-                                containerWidth / 2 +
-                                buttonWidth / 2;
-
-                              container.scrollTo({
-                                left: scrollPosition,
-                                behavior: "smooth",
-                              });
-                            }
-                          }
+                          scrollToColor(v._id); // ✅ هنا استخدمنا الدالة
                         }}
                         className={`w-10 h-10 rounded-full border-4 transition-all transform ${
                           selectedColorId === v._id
@@ -813,7 +840,14 @@ export default function ProductDetails() {
                         )?.quantity || 1
                       }
                       value={selectedQty}
-                      onChange={(e) => setSelectedQty(Number(e.target.value))}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        const max =
+                          selectedVariation.sizes.find(
+                            (s) => s._id === selectedSizeId
+                          )?.quantity || 1;
+                        setSelectedQty(Math.min(value, max));
+                      }}
                       className="bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-700 px-3 py-2 rounded-lg w-24 text-center focus:border-violet-500 outline-none"
                     />
                     <button
@@ -847,6 +881,37 @@ export default function ProductDetails() {
             )}
           </div>
         </div>
+        {isLightboxOpen && (
+          <div
+            className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
+            onClick={() => setIsLightboxOpen(false)}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                prevLightbox();
+              }}
+              className="absolute left-5 text-white text-4xl font-bold z-50"
+            >
+              ‹
+            </button>
+            <img
+              src={lightboxImages[lightboxIndex]?.url}
+              alt={product?.name}
+              className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                nextLightbox();
+              }}
+              className="absolute right-5 text-white text-4xl font-bold z-50"
+            >
+              ›
+            </button>
+          </div>
+        )}
 
         {relatedProducts.length > 0 && (
           <div className="mt-16 text-center">
