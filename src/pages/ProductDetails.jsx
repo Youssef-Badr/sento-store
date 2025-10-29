@@ -695,7 +695,7 @@ const scrollToThumbnail = (imgUrl) => {
                     {translations.colors}:
                   </h3>
                   <div
-                    className={`flex gap-4 overflow-x-auto py-2 ${
+                    className={`flex gap-4 overflow-x-auto py-2 px-1 ${
                       isRTL ? "flex-row-reverse" : ""
                     }`}
                     ref={colorsContainerRef}
