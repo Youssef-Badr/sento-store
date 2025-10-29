@@ -864,68 +864,78 @@ const scrollToThumbnail = (imgUrl) => {
           </div>
         </div>
         {isLightboxOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-          onClick={() => setIsLightboxOpen(false)} // 👈 الضغط في أي مكان خارجي يقفل
-          onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
-          onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
-          onTouchEnd={() => {
-            if (touchStart === null || touchEnd === null) return;
-            const diff = touchStart - touchEnd;
+  <div
+    className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
+    onClick={() => setIsLightboxOpen(false)} // 👈 ضغطه وحده تقفل
+    onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+    onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
+    onTouchEnd={(e) => {
+      if (touchStart === null || touchEnd === null) return;
+      const diff = touchStart - touchEnd;
 
-            if (diff > 50) {
-              nextLightbox(); // 👈 سحب لليسار → الصورة اللي بعدها
-            } else if (diff < -50) {
-              prevLightbox(); // 👉 سحب لليمين → الصورة اللي قبلها
-            }
+      // 👇 لو الفرق بسيط اعتبرها لمسة عادية مش Swipe
+      if (Math.abs(diff) < 10) {
+        setTouchStart(null);
+        setTouchEnd(null);
+        return;
+      }
 
-            setTouchStart(null);
-            setTouchEnd(null);
-          }}
-        >
-          {/* ❌ زر الإغلاق */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsLightboxOpen(false);
-            }}
-            className="absolute top-12 right-6 text-white text-3xl z-50 hover:text-gray-300 transition"
-            aria-label="Close"
-          >
-            <X size={36} />
-          </button>
+      e.stopPropagation(); // منع تشغيل onClick بعد السحب
 
-          {/* 👈 زر الصورة السابقة */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              prevLightbox();
-            }}
-            className="absolute left-5 text-white text-4xl font-bold z-50 hover:text-gray-300 transition"
-          >
-            ‹
-          </button>
+      if (diff > 50) {
+        nextLightbox(); // 👈 سحب لليسار → الصورة اللي بعدها
+      } else if (diff < -50) {
+        prevLightbox(); // 👉 سحب لليمين → الصورة اللي قبلها
+      }
 
-          {/* 🖼️ الصورة */}
-          <img
-            src={lightboxImages[lightboxIndex]?.url}
-            alt={product?.name}
-            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
-            onClick={(e) => e.stopPropagation()} // عشان الضغط على الصورة مايقفلش المودال
-          />
+      setTouchStart(null);
+      setTouchEnd(null);
+    }}
+  >
+    {/* ❌ زر الإغلاق */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsLightboxOpen(false);
+      }}
+      className="absolute top-12 right-6 text-white text-3xl z-[60] hover:text-gray-300 transition"
+      aria-label="Close"
+    >
+      <X size={36} />
+    </button>
 
-          {/* 👉 زر الصورة التالية */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              nextLightbox();
-            }}
-            className="absolute right-5 text-white text-4xl font-bold z-50 hover:text-gray-300 transition"
-          >
-            ›
-          </button>
-        </div>
-      )}
+    {/* 👈 زر الصورة السابقة */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        prevLightbox();
+      }}
+      className="absolute left-5 text-white text-4xl font-bold z-[60] hover:text-gray-300 transition"
+    >
+      ‹
+    </button>
+
+    {/* 🖼️ الصورة */}
+    <img
+      src={lightboxImages[lightboxIndex]?.url}
+      alt={product?.name}
+      className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
+      onClick={(e) => e.stopPropagation()} // الضغط على الصورة مش بيقفل
+    />
+
+    {/* 👉 زر الصورة التالية */}
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        nextLightbox();
+      }}
+      className="absolute right-5 text-white text-4xl font-bold z-[60] hover:text-gray-300 transition"
+    >
+      ›
+    </button>
+  </div>
+)}
+
         {relatedProducts.length > 0 && (
           <div className="mt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
