@@ -940,6 +940,7 @@ const scrollToThumbnail = (imgUrl) => {
 )}
 
 
+
         {relatedProducts.length > 0 && (
           <div className="mt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
