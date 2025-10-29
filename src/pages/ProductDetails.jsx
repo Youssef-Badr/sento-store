@@ -50,6 +50,9 @@ export default function ProductDetails() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxImages, setLightboxImages] = useState([]);
+  const [touchStart, setTouchStart] = useState(null);
+const [touchEnd, setTouchEnd] = useState(null);
+
   // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
   useEffect(() => {
     if (product && window.fbq) {
@@ -397,13 +400,7 @@ const scrollToThumbnail = (imgUrl) => {
     (v) => v._id === selectedColorId
   );
 
-  // const allImages =
-  //   product.variations?.flatMap((v) =>
-  //     (v.images || []).map((img) => ({
-  //       ...img,
-  //       variationId: v._id,
-  //     }))
-  //   ) || [];
+ 
 
   const handleAddToCart = () => {
     if (!product?._id) {
@@ -576,22 +573,7 @@ const scrollToThumbnail = (imgUrl) => {
 
         <div className="flex flex-col md:flex-row gap-12 md:gap-24">
           <div className="md:w-1/2 flex flex-col items-center">
-            {/* <div className="relative w-full flex items-center justify-center mb-4 rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
-  {selectedImage ? (
-    <img
-      src={selectedImage}
-      alt={product.name}
-      className="w-auto h-auto max-w-full max-h-[90vh] object-cover transition-transform duration-300 hover:scale-105"
-      style={{
-        display: "block",
-      }}
-    />
-  ) : (
-    <div className="text-gray-500 dark:text-gray-400 text-center p-10">
-      {translations.noImage}
-    </div>
-  )}
-</div> */}
+      
 
             <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-100 dark:bg-gray-900">
               {selectedImage ? (
@@ -882,37 +864,55 @@ const scrollToThumbnail = (imgUrl) => {
           </div>
         </div>
         {isLightboxOpen && (
-          <div
-            className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-            onClick={() => setIsLightboxOpen(false)}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                prevLightbox();
-              }}
-              className="absolute left-5 text-white text-4xl font-bold z-50"
-            >
-              ‹
-            </button>
-            <img
-              src={lightboxImages[lightboxIndex]?.url}
-              alt={product?.name}
-              className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                nextLightbox();
-              }}
-              className="absolute right-5 text-white text-4xl font-bold z-50"
-            >
-              ›
-            </button>
-          </div>
-        )}
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
+          onClick={() => setIsLightboxOpen(false)}
+          onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+          onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
+          onTouchEnd={() => {
+            if (touchStart === null || touchEnd === null) return;
+            const diff = touchStart - touchEnd;
 
+            if (diff > 50) {
+              // 👈 سحب لليسار → الصورة اللي بعدها
+              nextLightbox();
+            } else if (diff < -50) {
+              // 👉 سحب لليمين → الصورة اللي قبلها
+              prevLightbox();
+            }
+
+            setTouchStart(null);
+            setTouchEnd(null);
+          }}
+        >
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              prevLightbox();
+            }}
+            className="absolute left-5 text-white text-4xl font-bold z-50"
+          >
+            ‹
+          </button>
+
+          <img
+            src={lightboxImages[lightboxIndex]?.url}
+            alt={product?.name}
+            className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              nextLightbox();
+            }}
+            className="absolute right-5 text-white text-4xl font-bold z-50"
+          >
+            ›
+          </button>
+        </div>
+      )}
         {relatedProducts.length > 0 && (
           <div className="mt-16 text-center">
             <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-violet-700 dark:text-violet-400">
