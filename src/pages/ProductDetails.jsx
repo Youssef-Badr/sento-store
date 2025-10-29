@@ -867,34 +867,26 @@ const scrollToThumbnail = (imgUrl) => {
         {isLightboxOpen && (
   <div
     className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center"
-    onClick={() => setIsLightboxOpen(false)} // ✅ كليك واحد يقفل المودال فورًا
-  >
-    {/* ✅ طبقة خاصة فقط للسحب – تفصل الـ touch عن click */}
-    <div
-      className="absolute inset-0 z-40"
-      onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
-      onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
-      onTouchEnd={(e) => {
-        if (touchStart === null || touchEnd === null) return;
-        const diff = touchStart - touchEnd;
+    onClick={() => setIsLightboxOpen(false)} // 👈 ضغطه واحدة تقفل المودال
+    onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
+    onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
+    onTouchEnd={() => {
+      if (touchStart === null || touchEnd === null) return;
+      const diff = touchStart - touchEnd;
 
-        // تجاهل اللمسات الصغيرة
-        if (Math.abs(diff) < 30) {
-          setTouchStart(null);
-          setTouchEnd(null);
-          return;
-        }
-
-        e.stopPropagation(); // 🔥 يمنع onClick من التفعيل بعد السحب
-
-        if (diff > 50) nextLightbox(); // سحب لليسار → الصورة اللي بعدها
-        else if (diff < -50) prevLightbox(); // سحب لليمين → الصورة اللي قبلها
-
+      if (Math.abs(diff) < 30) {
         setTouchStart(null);
         setTouchEnd(null);
-      }}
-    />
+        return;
+      }
 
+      if (diff > 50) nextLightbox(); // سحب لليسار → الصورة التالية
+      else if (diff < -50) prevLightbox(); // سحب لليمين → الصورة السابقة
+
+      setTouchStart(null);
+      setTouchEnd(null);
+    }}
+  >
     {/* ❌ زر الإغلاق */}
     <button
       onClick={(e) => {
@@ -922,8 +914,8 @@ const scrollToThumbnail = (imgUrl) => {
     <img
       src={lightboxImages[lightboxIndex]?.url}
       alt={product?.name}
-      className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg z-[50]"
-      onClick={(e) => e.stopPropagation()} // الضغط على الصورة مش بيقفل المودال
+      className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg z-[50] select-none"
+      onClick={(e) => e.stopPropagation()} // 👈 الضغط على الصورة مش بيقفل المودال
     />
 
     {/* 👉 زر الصورة التالية */}
@@ -938,6 +930,7 @@ const scrollToThumbnail = (imgUrl) => {
     </button>
   </div>
 )}
+
 
 
         {relatedProducts.length > 0 && (
