@@ -865,18 +865,22 @@ const scrollToThumbnail = (imgUrl) => {
         </div>
         {isLightboxOpen && (
   <div
-    className="fixed inset-0 z-50 bg-black bg-opacity-80 flex items-center justify-center cursor-zoom-out transition-opacity duration-200"
-    onClick={() => setIsLightboxOpen(false)} // الضغط في أي مكان خارجي يقفل المودال
+    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center cursor-zoom-out transition-opacity duration-200"
+    onClick={() => setIsLightboxOpen(false)} // ضغطة واحدة تقفل المودال
     onTouchStart={(e) => setTouchStart(e.touches[0].clientX)}
     onTouchMove={(e) => setTouchEnd(e.touches[0].clientX)}
-    onTouchEnd={() => {
+    onTouchEnd={(e) => {
       if (touchStart === null || touchEnd === null) return;
+
       const diff = touchStart - touchEnd;
 
-      if (diff > 50) {
-        nextLightbox(); // سحب لليسار → الصورة اللي بعدها
-      } else if (diff < -50) {
-        prevLightbox(); // سحب لليمين → الصورة اللي قبلها
+      if (Math.abs(diff) > 50) {
+        e.stopPropagation(); // نمنع تنفيذ onClick بعد السحب
+        if (diff > 0) {
+          nextLightbox(); // سحب لليسار
+        } else {
+          prevLightbox(); // سحب لليمين
+        }
       }
 
       setTouchStart(null);
@@ -889,10 +893,10 @@ const scrollToThumbnail = (imgUrl) => {
         e.stopPropagation();
         setIsLightboxOpen(false);
       }}
-      className="absolute top-4 right-4 text-white text-4xl z-50 hover:text-gray-300 transition"
+      className="absolute top-5 right-5 text-white z-[60] hover:text-gray-300 transition"
       aria-label="Close"
     >
-      <X size={32} strokeWidth={2.5} />
+      <X size={36} strokeWidth={2.5} />
     </button>
 
     {/* 👈 زر الصورة السابقة */}
@@ -901,7 +905,7 @@ const scrollToThumbnail = (imgUrl) => {
         e.stopPropagation();
         prevLightbox();
       }}
-      className="absolute left-5 text-white text-5xl font-bold z-50 hover:text-gray-300 transition"
+      className="absolute left-6 text-white text-6xl font-bold z-[60] hover:text-gray-300 transition"
     >
       ‹
     </button>
@@ -910,8 +914,8 @@ const scrollToThumbnail = (imgUrl) => {
     <img
       src={lightboxImages[lightboxIndex]?.url}
       alt={product?.name}
-      className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg cursor-default transition-transform duration-200"
-      onClick={(e) => e.stopPropagation()} // الضغط على الصورة مش بيقفل المودال
+      className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg cursor-default z-[55]"
+      onClick={(e) => e.stopPropagation()} // الضغط على الصورة مش بيقفل
     />
 
     {/* 👉 زر الصورة التالية */}
@@ -920,12 +924,13 @@ const scrollToThumbnail = (imgUrl) => {
         e.stopPropagation();
         nextLightbox();
       }}
-      className="absolute right-5 text-white text-5xl font-bold z-50 hover:text-gray-300 transition"
+      className="absolute right-6 text-white text-6xl font-bold z-[60] hover:text-gray-300 transition"
     >
       ›
     </button>
   </div>
 )}
+
 
         {relatedProducts.length > 0 && (
           <div className="mt-16 text-center">
