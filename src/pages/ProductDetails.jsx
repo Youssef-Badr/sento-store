@@ -460,14 +460,14 @@ const scrollToThumbnail = (imgUrl) => {
  
   
 
-  // const handleThumbnailClick = (img) => {
-  //   setSelectedImage(img.url);
-  //   if (img.variationId) {
-  //     setSelectedColorId(img.variationId);
-  //     setSelectedSizeId(null);
-  //     setSelectedQty(1);
-  //   }
-  // };
+  const handleThumbnailClick = (img) => {
+    setSelectedImage(img.url);
+    if (img.variationId) {
+      setSelectedColorId(img.variationId);
+      setSelectedSizeId(null);
+      setSelectedQty(1);
+    }
+  };
   const openLightbox = (img) => {
     if (!lightboxImages.length) return;
     const index = lightboxImages.findIndex((i) => i.url === img.url);
@@ -625,7 +625,7 @@ const scrollToThumbnail = (imgUrl) => {
                 onClick={() => {
                     // نستخدم setSelectedImageIndex بدلاً من handleThumbnailClick لتحديث الصورة الرئيسية
                     setSelectedImageIndex(index); 
-                    
+                    handleThumbnailClick(img);
                     // 💡 الأهم: عند النقر على الصورة، مرر الشريط لإظهارها في المنتصف
                     scrollToThumbnail(img.url);
                 }}
