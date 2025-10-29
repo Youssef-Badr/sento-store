@@ -181,33 +181,8 @@ const CheckoutPage = () => {
 
 
 // 👈 قبل إرسال الأوردر
-// if (window.fbq) {
-//   window.fbq('track', 'InitiateCheckout', {
-//     value: totalWithDiscount,
-//     currency: 'EGP',
-//     contents: cart.map(item => ({
-//       id: item.product,
-//       quantity: item.qty,
-//       item_price: item.price
-//     })),
-//     content_type: 'product'
-//   });
-// }
 if (window.fbq) {
-  // بيكسل الأول
-  window.fbq('trackSingle', '1311836394018583', 'InitiateCheckout', {
-    value: totalWithDiscount,
-    currency: 'EGP',
-    contents: cart.map(item => ({
-      id: item.product,
-      quantity: item.qty,
-      item_price: item.price
-    })),
-    content_type: 'product'
-  });
-
-  // بيكسل الثاني
-  window.fbq('trackSingle', '2541072952746018', 'InitiateCheckout', {
+  window.fbq('track', 'InitiateCheckout', {
     value: totalWithDiscount,
     currency: 'EGP',
     contents: cart.map(item => ({
