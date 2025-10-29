@@ -12,6 +12,7 @@ import {
   Home,
   ShoppingBag,
   Heart,
+  Star,
   Gift,
 } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -76,7 +77,7 @@ export default function Navbar() {
       icon: ShoppingBag,
     },
     { name: isRTL ? "العروض" : "On Sale", path: "/offers", icon: Gift },
-    { name: isRTL ? "المفضلة" : "Wishlist", path: "/wishlist", icon: Heart },
+    { name: isRTL ? "لأكثر مبيعًا" : "Best Seller", path: "/wishlist", icon: Star },
   ];
 
   const categories = [
