@@ -1,6 +1,27 @@
 {
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/index.html" }
-    ]
-  }
-  
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://trusted.cdn.com https://cdnjs.cloudflare.com https://sento-backend.onrender.com https://sento-wear.com https://www.sento-wear.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://sento-wear.com https://www.sento-wear.com; img-src 'self' data: https: https://sentostore.com https://www.sentostore.com https://admin.sentostore.com https://api.sentostore.com https://sento-backend.onrender.com https://res.cloudinary.com https://sento-wear.com https://www.sento-wear.com; font-src 'self' https://cdnjs.cloudflare.com https://sentostore.com https://www.sentostore.com https://admin.sentostore.com https://api.sentostore.com https://sento-backend.onrender.com https://sento-wear.com https://www.sento-wear.com; connect-src 'self' https://sentostore.com https://www.sentostore.com https://admin.sentostore.com https://api.sentostore.com https://trusted.cdn.com https://sento-backend.onrender.com https://res.cloudinary.com https://sento-wear.com https://www.sento-wear.com; frame-ancestors 'none'; object-src 'none';"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains; preload"
+        },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" },
+        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
+        { "key": "Trusted-Types", "value": "default; script" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
