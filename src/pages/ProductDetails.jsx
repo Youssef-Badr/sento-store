@@ -450,17 +450,7 @@ const scrollToThumbnail = (imgUrl) => {
 
     addToCart(product, selectedColorId, selectedSizeId, selectedQty);
 
-    // // ✅ Meta Pixel AddToCart using window
-    // if (window.fbq) {
-    //   window.fbq("track", "AddToCart", {
-    //     content_ids: [product._id],
-    //     content_name: product.name,
-    //     content_type: "product",
-    //     value: product.salePrice || product.originalPrice || 0,
-    //     currency: "EGP",
-    //     quantity: selectedQty,
-    //   });
-    // }
+   
 // ✅ Meta Pixel AddToCart using window
 if (window.trackFBEvent) {
   window.trackFBEvent("AddToCart", {

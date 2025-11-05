@@ -80,7 +80,6 @@ const isSoldOut =
         setShowSizeSelector(false);
 
         // Meta Pixel AddToCart event
-        // Meta Pixel AddToCart event
 if (window.trackFBEvent) {
   window.trackFBEvent("AddToCart", {
     content_ids: [product._id],

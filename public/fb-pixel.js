@@ -1,36 +1,3 @@
-// // fb-pixel.js
-
-// !function(f,b,e,v,n,t,s) {
-//     if(f.fbq) return;
-//     n = f.fbq = function() {
-//       n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-//     };
-//     if(!f._fbq) f._fbq = n;
-//     n.push = n;
-//     n.loaded = !0;
-//     n.version = '2.0';
-//     n.queue = [];
-  
-//     t = b.createElement(e);
-//     t.async = !0;
-//     t.src = v;
-  
-//     s = b.getElementsByTagName(e)[0];
-//     s.parentNode.insertBefore(t, s);
-//   }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
-  
-//   // Initialize your pixels
-//   // eslint-disable-next-line no-undef
-//   fbq('init', '1311836394018583'); // SenTo Wear Pixel
-//   // eslint-disable-next-line no-undef
-//   fbq('init', '2541072952746018'); // bixel Benanegy
-  
-//   // Optionally, track page view
-//   // eslint-disable-next-line no-undef
-//   fbq('track', 'PageView');
-  // fb-pixel.js
-
-// Check if fbq is already initialized
 if (!window.fbq) {
     !function(f,b,e,v,n,t,s){
       if(f.fbq) return;
