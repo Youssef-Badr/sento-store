@@ -57,18 +57,19 @@ const ThankYou = () => {
   }
 
   // ------------- Facebook / Instagram Pixel -------------
-  if (window.fbq) {
-    window.fbq("track", "Purchase", {
-      value: Number(calculatedTotal) || 0,
-      currency: metaCurrency,
-      contents: order.orderItems.map((item) => ({
-        id: item.product || item._id || "unknown",
-        quantity: Number(item.quantity) || 1,
-        item_price: Number(item.price) || 0,
-      })),
-      content_type: "product",
-    });
-  }
+  // ✅ Meta Pixel Purchase
+if (window.trackFBEvent) {
+  window.trackFBEvent("Purchase", {
+    value: Number(calculatedTotal) || 0,
+    currency: metaCurrency,
+    contents: order.orderItems.map((item) => ({
+      id: item.product || item._id || "unknown",
+      quantity: Number(item.quantity) || 1,
+      item_price: Number(item.price) || 0,
+    })),
+    content_type: "product",
+  });
+}
 }, [order, calculatedTotal]);
 
 

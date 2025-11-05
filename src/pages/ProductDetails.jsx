@@ -53,18 +53,32 @@ export default function ProductDetails() {
   const [touchStart, setTouchStart] = useState(null);
 const [touchEnd, setTouchEnd] = useState(null);
 
-  // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
-  useEffect(() => {
-    if (product && window.fbq) {
-      window.fbq("track", "ViewContent", {
-        content_ids: [product._id],
-        content_name: product.name,
-        content_type: "product",
-        value: product.salePrice || product.originalPrice || 0,
-        currency: "EGP",
-      });
-    }
-  }, [product]);
+  // // ⭐️ Meta Pixel ViewContent عند تحميل المنتج
+  // useEffect(() => {
+  //   if (product && window.fbq) {
+  //     window.fbq("track", "ViewContent", {
+  //       content_ids: [product._id],
+  //       content_name: product.name,
+  //       content_type: "product",
+  //       value: product.salePrice || product.originalPrice || 0,
+  //       currency: "EGP",
+  //     });
+  //   }
+  // }, [product]);
+
+// ⭐️ Meta Pixel ViewContent عند تحميل المنتج
+useEffect(() => {
+  if (product && window.trackFBEvent) {
+    window.trackFBEvent("ViewContent", {
+      content_ids: [product._id],
+      content_name: product.name,
+      content_type: "product",
+      value: product.salePrice || product.originalPrice || 0,
+      currency: "EGP",
+    });
+  }
+}, [product]);
+
 
   const { language } = useLanguage();
   useTheme();
@@ -436,17 +450,28 @@ const scrollToThumbnail = (imgUrl) => {
 
     addToCart(product, selectedColorId, selectedSizeId, selectedQty);
 
-    // ✅ Meta Pixel AddToCart using window
-    if (window.fbq) {
-      window.fbq("track", "AddToCart", {
-        content_ids: [product._id],
-        content_name: product.name,
-        content_type: "product",
-        value: product.salePrice || product.originalPrice || 0,
-        currency: "EGP",
-        quantity: selectedQty,
-      });
-    }
+    // // ✅ Meta Pixel AddToCart using window
+    // if (window.fbq) {
+    //   window.fbq("track", "AddToCart", {
+    //     content_ids: [product._id],
+    //     content_name: product.name,
+    //     content_type: "product",
+    //     value: product.salePrice || product.originalPrice || 0,
+    //     currency: "EGP",
+    //     quantity: selectedQty,
+    //   });
+    // }
+// ✅ Meta Pixel AddToCart using window
+if (window.trackFBEvent) {
+  window.trackFBEvent("AddToCart", {
+    content_ids: [product._id],
+    content_name: product.name,
+    content_type: "product",
+    value: product.salePrice || product.originalPrice || 0,
+    currency: "EGP",
+    quantity: selectedQty,
+  });
+}
 
     showToastMessage(
       translations.addToCartSuccess +
