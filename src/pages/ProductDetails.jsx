@@ -859,7 +859,7 @@ if (window.trackFBEvent) {
               )}
             </div>
 
-            {isSoldOut ? (
+            {/* {isSoldOut ? (
               <button
                 disabled
                 className="mt-6 flex items-center justify-center gap-2 bg-gray-400 text-white py-3 px-6 rounded-xl shadow-lg cursor-not-allowed w-full sm:w-auto font-bold text-lg"
@@ -877,12 +877,14 @@ if (window.trackFBEvent) {
               </button>
             )}
             <button
-  aria-label="Go to Checkout Page"
+  aria-label={isRTL ? "اذهب إلى صفحة الدفع" : "Go to Checkout Page"}
   onClick={() => {
     if (!cart || cart.length === 0) {
       // لو الكارت فاضي، نعرض رسالة
       setShowToast(true);
-      setToastMessage(isRTL ? "يجب اختيار منتج أولاً" : "Please add a product first");
+      setToastMessage(
+        isRTL ? "يجب اختيار منتج أولاً" : "Please add a product first"
+      );
       setTimeout(() => setShowToast(false), 3000);
     } else {
       // لو فيه منتجات، نروح للصفحة
@@ -895,8 +897,50 @@ if (window.trackFBEvent) {
       : "bg-gray-400 cursor-not-allowed"
   }`}
 >
-  {translations.goToCheckout || "Go to Checkout Page"}
-</button>
+  {isRTL ? "إتمام الدفع" : translations.goToCheckout || "Go to Checkout Page"}
+</button> */}
+<div className="flex flex-col sm:flex-row gap-4 mt-4 w-full">
+  {isSoldOut ? (
+    <button
+      disabled
+      className="flex-1 flex items-center justify-center gap-2 bg-gray-400 text-white py-3 px-6 rounded-xl shadow-lg cursor-not-allowed font-bold text-lg"
+    >
+      {isRTL ? "غير متاح" : "Sold Out"}
+    </button>
+  ) : (
+    <button
+      aria-label="Add to Cart"
+      onClick={handleAddToCart}
+      className="flex-1 flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 text-white py-3 px-6 rounded-xl shadow-lg font-bold text-lg transition-all"
+    >
+      <ShoppingCart size={20} />
+      {translations.addToCart}
+    </button>
+  )}
+
+  <button
+    aria-label={isRTL ? "اذهب إلى صفحة الدفع" : "Go to Checkout Page"}
+    onClick={() => {
+      if (!cart || cart.length === 0) {
+        setShowToast(true);
+        setToastMessage(
+          isRTL ? "يجب اختيار منتج أولاً" : "Please add a product first"
+        );
+        setTimeout(() => setShowToast(false), 3000);
+      } else {
+        navigate("/checkout");
+      }
+    }}
+    className={`flex-1 flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold text-white shadow-lg transition-all ${
+      cart && cart.length > 0
+        ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+        : "bg-gray-400 cursor-not-allowed"
+    }`}
+  >
+    {isRTL ? "إتمام الدفع" : translations.goToCheckout || "Go to Checkout"}
+  </button>
+</div>
+
 
           </div>
         </div>
