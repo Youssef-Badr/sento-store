@@ -30,7 +30,7 @@ export default function ProductDetails() {
   const [error, setError] = useState("");
   const [relatedProducts, setRelatedProducts] = useState([]);
   const navigate = useNavigate();
-  const { addToCart } = useContext(CartContext);
+  const { cart, addToCart } = useContext(CartContext);
   const [showSizeChart, setShowSizeChart] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const thumbnailsContainerRef = useRef(null); // ✅ هنا عرفنا الريف
@@ -876,6 +876,28 @@ if (window.trackFBEvent) {
                 {translations.addToCart}
               </button>
             )}
+            <button
+  aria-label="Go to Checkout Page"
+  onClick={() => {
+    if (!cart || cart.length === 0) {
+      // لو الكارت فاضي، نعرض رسالة
+      setShowToast(true);
+      setToastMessage(isRTL ? "يجب اختيار منتج أولاً" : "Please add a product first");
+      setTimeout(() => setShowToast(false), 3000);
+    } else {
+      // لو فيه منتجات، نروح للصفحة
+      navigate("/checkout");
+    }
+  }}
+  className={`mt-4 w-full sm:w-auto py-3 px-6 rounded-xl font-bold text-white shadow-lg transition-all ${
+    cart && cart.length > 0
+      ? "bg-green-600 hover:bg-green-700 cursor-pointer"
+      : "bg-gray-400 cursor-not-allowed"
+  }`}
+>
+  {translations.goToCheckout || "Go to Checkout Page"}
+</button>
+
           </div>
         </div>
         
