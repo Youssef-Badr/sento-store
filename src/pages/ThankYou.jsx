@@ -58,8 +58,8 @@ const ThankYou = () => {
 
   // ------------- Facebook / Instagram Pixel -------------
   // ✅ Meta Pixel Purchase
-if (window.trackFBEvent) {
-  window.trackFBEvent("Purchase", {
+if (window.TrackEvent) {
+  window.TrackEvent("Purchase", {
     value: Number(calculatedTotal) || 0,
     currency: metaCurrency,
     contents: order.orderItems.map((item) => ({
