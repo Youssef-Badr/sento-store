@@ -10,7 +10,7 @@ if (!window.fbq) {
     s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s);
   }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-  fbq('init', '1311836394018583');
+  // fbq('init', '1311836394018583');
   fbq('init', '2541072952746018');
   fbq('init', '1597417537914943');
 
