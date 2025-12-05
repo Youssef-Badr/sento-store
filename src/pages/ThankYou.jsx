@@ -57,13 +57,15 @@ const ThankYou = () => {
   }
 
   // ------------- Facebook / Instagram Pixel -------------
-  // ✅ Meta Pixel Purchase
-if (window.TrackEvent) {
-  window.TrackEvent("Purchase", {
+ // ✅ Meta Pixel Purchase
+
+ if (window.trackFBEvent) {
+  window.trackFBEvent("Purchase", {
     value: Number(calculatedTotal) || 0,
     currency: metaCurrency,
+    content_ids: order.orderItems.map(item => String(item.product || item._id)), // مهم
     contents: order.orderItems.map((item) => ({
-      id: item.product || item._id || "unknown",
+      id: String(item.product || item._id),
       quantity: Number(item.quantity) || 1,
       item_price: Number(item.price) || 0,
     })),
