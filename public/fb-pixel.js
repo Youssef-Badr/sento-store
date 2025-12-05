@@ -47,9 +47,9 @@ if (!window.fbq) {
   );
 
   // Initialize pixels
-  fbq('init', '1311836394018583'); // SenTo Wear Pixel
+  // fbq('init', '1311836394018583'); // SenTo Wear Pixel
   fbq("init", "2541072952746018"); // Benanegy Pixel
-  // fbq("init", "1597417537914943"); // Pixel الجديد
+  fbq("init", "1597417537914943"); // Pixel الجديد
 
   // Track page view
   fbq("track", "PageView");
