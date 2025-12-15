@@ -27,56 +27,99 @@ const ThankYou = () => {
   }, [orderId]);
 
   // 🧮 الحسابات
-  const subtotal = order?.orderItems?.reduce(
-    (acc, item) =>
-      acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
-    0
-  )|| 0;
+  const subtotal =
+    order?.orderItems?.reduce(
+      (acc, item) =>
+        acc + (Number(item.price) || 0) * (Number(item.quantity) || 0),
+      0
+    ) || 0;
   const shipping = Number(order?.shippingFee) || 0;
   const discount = order?.discount?.amount || 0;
   const calculatedTotal = subtotal + shipping - discount;
 
- // ------------------- Tracking بعد تحميل البيانات -------------------
- useEffect(() => {
-  if (!order || !order.orderItems) return;
+  // ------------------- Tracking بعد تحميل البيانات -------------------
+  //  useEffect(() => {
+  //   if (!order || !order.orderItems) return;
 
-  // ------------- Google Analytics (gtag) -------------
-  const metaCurrency = ["EGP","USD"].includes("EGP") ? "EGP" : "USD";
+  //   // ------------- Google Analytics (gtag) -------------
+  //   const metaCurrency = ["EGP","USD"].includes("EGP") ? "EGP" : "USD";
 
-  if (window.gtag) {
-    window.gtag("event", "purchase", {
-      transaction_id: order._id || "unknown",
-      value: Number(calculatedTotal) || 0,
-      currency: metaCurrency,
-      items: order.orderItems.map((item) => ({
-        id: item.product || item._id || "unknown",
-        quantity: Number(item.quantity) || 1,
-        price: Number(item.price) || 0,
-      })),
-    });
-  }
+  //   if (window.gtag) {
+  //     window.gtag("event", "purchase", {
+  //       transaction_id: order._id || "unknown",
+  //       value: Number(calculatedTotal) || 0,
+  //       currency: metaCurrency,
+  //       items: order.orderItems.map((item) => ({
+  //         id: item.product || item._id || "unknown",
+  //         quantity: Number(item.quantity) || 1,
+  //         price: Number(item.price) || 0,
+  //       })),
+  //     });
+  //   }
 
-  // ------------- Facebook / Instagram Pixel -------------
- // ✅ Meta Pixel Purchase
+  //   // ------------- Facebook / Instagram Pixel -------------
+  //  // ✅ Meta Pixel Purchase
 
- if (window.trackFBEvent) {
-  window.trackFBEvent("Purchase", {
-    value: Number(calculatedTotal) || 0,
-    currency: metaCurrency,
-    content_ids: order.orderItems.map(item => String(item.product || item._id)), // مهم
-    contents: order.orderItems.map((item) => ({
-      id: String(item.product || item._id),
-      quantity: Number(item.quantity) || 1,
-      item_price: Number(item.price) || 0,
-    })),
-    content_type: "product",
-  });
-}
-}, [order, calculatedTotal]);
+  //  if (window.trackFBEvent) {
+  //   window.trackFBEvent("Purchase", {
+  //     value: Number(calculatedTotal) || 0,
+  //     currency: metaCurrency,
+  //     content_ids: order.orderItems.map(item => String(item.product || item._id)), // مهم
+  //     contents: order.orderItems.map((item) => ({
+  //       id: String(item.product || item._id),
+  //       quantity: Number(item.quantity) || 1,
+  //       item_price: Number(item.price) || 0,
+  //     })),
+  //     content_type: "product",
+  //   });
+  // }
+  // }, [order, calculatedTotal]);
 
+  // ------------------- Tracking بعد تحميل البيانات (Deduplication) -------------------
+  useEffect(() => {
+    if (!order?._id || !order.orderItems) return;
 
+    const metaCurrency = ["EGP", "USD"].includes("EGP") ? "EGP" : "USD";
+    const sentKey = `fb_purchase_sent_${order._id}`;
 
+    // 🛑 امنع التكرار
+    if (sessionStorage.getItem(sentKey)) return;
 
+    // -------- Google Analytics --------
+    if (window.gtag) {
+      window.gtag("event", "purchase", {
+        transaction_id: order._id,
+        value: Number(calculatedTotal) || 0,
+        currency: metaCurrency,
+        items: order.orderItems.map((item) => ({
+          id: item.product || item._id || "unknown",
+          quantity: Number(item.quantity) || 1,
+          price: Number(item.price) || 0,
+        })),
+      });
+    }
+
+    // -------- Meta Pixel (Purchase) --------
+    if (window.trackFBEvent) {
+      window.trackFBEvent("Purchase", {
+        event_id: order._id, // ⭐ Deduplication
+        value: Number(calculatedTotal) || 0,
+        currency: metaCurrency,
+        content_ids: order.orderItems.map((item) =>
+          String(item.product || item._id)
+        ),
+        contents: order.orderItems.map((item) => ({
+          id: String(item.product || item._id),
+          quantity: Number(item.quantity) || 1,
+          item_price: Number(item.price) || 0,
+        })),
+        content_type: "product",
+      });
+    }
+
+    // ✅ علّم إن الحدث اتبعت
+    sessionStorage.setItem(sentKey, "true");
+  }, [order, calculatedTotal]);
 
   if (loading) {
     return (
@@ -107,7 +150,6 @@ const ThankYou = () => {
       </div>
     );
   }
-
 
   return (
     <div
@@ -265,7 +307,7 @@ const ThankYou = () => {
 
       {/* زر العودة */}
       <button
-      aria-label=""
+        aria-label=""
         onClick={() => navigate("/")}
         className="px-6 py-3 mt-8 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-300"
       >
